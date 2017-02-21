@@ -1,0 +1,8 @@
+Matrix size: 2000x2000
+
+Time in serial version: 20.27576
+
+Number of threads = 8
+Chunk size: 10
+
+Time in Parallel version: 5.97096

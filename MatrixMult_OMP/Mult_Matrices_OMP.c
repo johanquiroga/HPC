@@ -52,7 +52,7 @@ int main() {
 	//Parallel version
 	begin=omp_get_wtime();
 	chunk = CHUNKSIZE;
-	#pragma omp parallel shared(A, B, C_p, chunk, nthreads) private(i, j, k, ans, tid) num_threads(10)
+	#pragma omp parallel shared(A, B, C_p, chunk, nthreads) private(i, j, k, ans, tid)
 	{
 		tid = omp_get_thread_num();
   		if (tid == 0) {
