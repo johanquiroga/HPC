@@ -20,7 +20,7 @@ void print_vec(double A[SIZE]) {
 }
 
 int main(int argc, char** argv) {
-	int numtasks, taskid, nworkers, chunk, extra_data, offset, msg_type, data_to_send;
+	int numtasks, taskid, nworkers, chunk, extra_data, offset, data_to_send;
 	double A[SIZE], B[SIZE], C[SIZE];
 	
 	MPI_Init(&argc, &argv);
@@ -48,7 +48,6 @@ int main(int argc, char** argv) {
 		data_to_send = SIZE/nworkers;
 		extra_data = SIZE%nworkers;
 		offset = 0;
-		msg_type = FROM_MASTER;
 		for(int i=1; i<=nworkers; i++) {
 			if(i <= extra_data) {
 				chunk = data_to_send + 1; 	

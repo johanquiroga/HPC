@@ -1,3 +1,4 @@
 Mult_Matrices_OMP
 *.out
-vector_add
+mpi_vector_add
+mpi_matrix_mult
