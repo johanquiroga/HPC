@@ -77,7 +77,6 @@ int main(int argc, char** argv) {
 			}
 		}
 		printf("\n");*/
-
 		
 		printf("\nMatrix C:");
 		for(i=0; i<SIZE; i++) {

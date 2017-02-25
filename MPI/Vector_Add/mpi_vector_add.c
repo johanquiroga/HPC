@@ -6,12 +6,6 @@
 #define FROM_MASTER 1
 #define FROM_WORKER 2
 
-void vec_add(double A[SIZE], double B[SIZE], int C[SIZE]) {
-	for(int i=0; i<SIZE; i++) {
-		C[i]=A[i]+B[i];
-	}
-}
-
 void print_vec(double A[SIZE]) {
 	printf("\n");
 	for(int i=0; i<SIZE; i++) {
