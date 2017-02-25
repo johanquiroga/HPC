@@ -10,6 +10,7 @@ void vec_add(int A[SIZE], int B[SIZE], int C[SIZE]) {
 }
 
 void print_vec(int A[SIZE]) {
+	printf("\n");
 	for(int i=0; i<SIZE; i++) {
 		printf("%d\t", A[i]);
 	}
@@ -27,8 +28,10 @@ int main() {
 	
 	vec_add(A, B, C);
 	
+	print_vec(A);
+	print_vec(B);
 	print_vec(C);
-	printf("Done");
+	printf("\nDone\n");
 	
 	return 0;
 }
