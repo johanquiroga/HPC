@@ -71,8 +71,9 @@ int main(int argc, char** argv) {
 			printf("Received results from task %d\n", i);
 		}
 
-		print_vec(A);
-		print_vec(B);
+		//print results
+		//print_vec(A);
+		//print_vec(B);
 		print_vec(C);
 		printf("\nDone\n");
 	}
@@ -88,6 +89,7 @@ int main(int argc, char** argv) {
 		for(int i=0; i<chunk; i++) {
 			C[i]=A[i]+B[i];
 		}
+
 		//send results
 		MPI_Send(&offset, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD);          	
 		MPI_Send(&chunk, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD);
