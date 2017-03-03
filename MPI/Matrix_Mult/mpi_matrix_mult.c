@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
 		MPI_Recv(&rows, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		MPI_Recv(&A, rows*SIZE, MPI_DOUBLE, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		MPI_Recv(&B, SIZE*SIZE, MPI_DOUBLE, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
+		
 		//do matrix mult with data
 		for(i=0; i<SIZE; i++) {
 			for(j=0; j<SIZE; j++) {
