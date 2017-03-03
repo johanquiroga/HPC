@@ -2,3 +2,4 @@ Mult_Matrices_OMP
 *.out
 mpi_vector_add
 mpi_matrix_mult
+cuda_vector_add
