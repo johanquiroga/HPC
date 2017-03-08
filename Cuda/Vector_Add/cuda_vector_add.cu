@@ -70,7 +70,9 @@ int main() {
 	cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
 	
-	vecAdd<<<ceil(TAM/256.0), 256>>>(d_A, d_B, d_C);
+	dim3 dimGrid(ceil(TAM/256.0), 1, 1);
+	dim3 dimBlock(256, 1, 1);
+	vecAdd<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
 	
 	cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
 	
