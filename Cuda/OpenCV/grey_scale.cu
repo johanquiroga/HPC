@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
 	
 	image_out.create(height, width, CV_8UC1);
 	image_out.data = h_ImageOut;
-	imwrite("image_out.jpg", image_out);
+	imwrite("test_files/image_out.jpg", image_out);
 
 	//free(h_ImageData);
 	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
