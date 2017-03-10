@@ -14,6 +14,11 @@ __global__ void PictureKernell(unsigned char* d_Pin, unsigned char* d_Pout, int 
 	}
 }
 
+void showImage(Mat &image, const char *window) {
+	imshow(window, image);
+	waitKey(0);
+}
+
 int main(int argc, char** argv) {
 	cudaError_t err = cudaSuccess;
 	char* image_name = argv[1];
@@ -77,5 +82,7 @@ int main(int argc, char** argv) {
 	
 //	waitKey(0);
 	printf("Done\n");
+	showImage(image, "Image In");
+	showImage(image_out, "Image out");
 	return 0;
 }
