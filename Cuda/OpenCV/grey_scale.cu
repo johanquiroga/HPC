@@ -21,13 +21,14 @@ int main(int argc, char** argv) {
 	Mat image, image_out;
 	unsigned char *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut;
 	Size imageSize; 
-	
+
+	printf("Image name: %s\n", image_name);
+	image = imread(image_name, 0);
 	if(argc !=2 || !image.data){
 	        printf("No image Data \n");
         	return -1;
 	}
 
-	image = imread(image_name, 0);
 	if(image.empty()) {
 		printf("Couldn't find or open the image...\n");
 		return -1;
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 	imageSize = image.size();
 	width = imageSize.width;
 	height = imageSize.height;
-	sizeImageGrey = sizeof(unsigned char *)*width*height;
+	sizeImageGrey = sizeof(unsigned char)*width*height;
 	
 	h_ImageData = (unsigned char *) malloc (sizeImageGrey);
 	h_ImageData = image.data;
@@ -71,7 +72,8 @@ int main(int argc, char** argv) {
 	image_out.data = h_ImageOut;
 	imwrite("image_out.jpg", image_out);
 
-	free(h_ImageData); free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
+	//free(h_ImageData);
+	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
 	
 //	waitKey(0);
 	printf("Done\n");
