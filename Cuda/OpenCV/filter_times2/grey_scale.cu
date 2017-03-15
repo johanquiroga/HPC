@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
 	
 	image_out.create(height, width, CV_8UC1);
 	image_out.data = h_ImageOut;
-	imwrite("test_files/image_out.jpg", image_out);
+	imwrite("image_out.jpg", image_out);
 
 	printf("Done\n");
 	showImage(image, "Image In");
