@@ -15,8 +15,8 @@ __global__ void PictureKernell(unsigned char* d_Pin, unsigned char* d_Pout, int 
 }
 
 void showImage(Mat &image, const char *window) {
+	namedWindow(window, CV_WINDOW_NORMAL);
 	imshow(window, image);
-	waitKey(0);
 }
 
 int main(int argc, char** argv) {
@@ -77,12 +77,10 @@ int main(int argc, char** argv) {
 	image_out.data = h_ImageOut;
 	imwrite("test_files/image_out.jpg", image_out);
 
-	//free(h_ImageData);
-	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
-	
-//	waitKey(0);
 	printf("Done\n");
 	showImage(image, "Image In");
 	showImage(image_out, "Image out");
+	waitKey(0);
+	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
 	return 0;
 }
