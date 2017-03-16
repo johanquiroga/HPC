@@ -10,5 +10,5 @@
 for run in {1..20}
 do
 	echo $run
-	srun rgb2gray ../test_files/Kylo_Ren.jpg
+	srun rgb2gray ../test_files/colorful_image.jpg
 done
