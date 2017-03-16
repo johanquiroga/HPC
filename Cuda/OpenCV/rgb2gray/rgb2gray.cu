@@ -28,14 +28,14 @@ void showImage(Mat &image, const char *window) {
 int main(int argc, char** argv) {
 	cudaError_t err = cudaSuccess;
 	char* image_name = argv[1];
-	clock_t start, end;
-	double time_used;
+	clock_t start_cuda, end_cuda, start_opencv, end_opencv;
+	double time_used_cuda, time_used_opencv;
 	int width, height, sizeImageGrey, sizeImage;
-	Mat image, image_out;
+	Mat image, image_out_cuda, image_out_opencv;
 	unsigned char *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut;
 	Size imageSize; 
 
-	printf("Image name: %s\n", image_name);
+	//printf("Image name: %s\n", image_name);
 	image = imread(image_name, 1);
 	if(argc !=2 || !image.data){
 	        printf("No image Data \n");
@@ -67,7 +67,8 @@ int main(int argc, char** argv) {
 	 	exit(-1);
 	}
 	
-	start = clock();
+	// Start conversion with cuda	
+	start_cuda = clock();
 	err = cudaMemcpy(d_ImageData, h_ImageData, sizeImage, cudaMemcpyHostToDevice);
 	if(err != cudaSuccess){
         	printf("Error copiando los datos de h_ImageData a d_ImageData\n");
@@ -83,17 +84,29 @@ int main(int argc, char** argv) {
         	printf("Error copiando los datos de d_ImageOut a h_ImageOut\n");
 	 	exit(-1);
 	}
-	end = clock();
-	time_used = ((double) (end - start)) /CLOCKS_PER_SEC;
-	printf("Tiempo algoritmo en CUDA: %.10f\n", time_used);
+	end_cuda = clock();
+	// End conversion
+	time_used_cuda = ((double) (end_cuda - start_cuda)) /CLOCKS_PER_SEC;
+	printf("Tiempo algoritmo en CUDA: %.10f\n", time_used_cuda);
 	
-	image_out.create(height, width, CV_8UC1);
-	image_out.data = h_ImageOut;
-	imwrite("image_out.jpg", image_out);
+	image_out_cuda.create(height, width, CV_8UC1);
+	image_out_cuda.data = h_ImageOut;
+	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	printf("Done\n");
+	// Start conversion with OpenCV
+	start_opencv = clock();
+	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
+	end_opencv = clock();
+	// End conversion
+	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
+	printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
+	printf("Aceleración obtenida: %.10f\n", time_used_opencv/time_used_cuda);
+	imwrite("image_out_opencv.jpg", image_out_opencv);
+	
+	printf("Done\n\n");
 	//showImage(image, "Image In");
-	//showImage(image_out, "Image out");
+	//showImage(image_out_cuda, "Image out CUDA");
+	//showImage(image_out_opencv, "Image out OpenCV");
 	//waitKey(0);
 	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
 	return 0;
