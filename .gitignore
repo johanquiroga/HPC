@@ -8,3 +8,5 @@ vector_add
 */*/build
 rgb2gray
 image_out.jpg
+image_out_cuda.jpg
+image_out_opencv.jpg
