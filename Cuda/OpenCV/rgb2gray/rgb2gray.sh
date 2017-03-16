@@ -7,4 +7,8 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
 
-srun rgb2gray ../test_files/Kylo_Ren.jpg
+for run in {1..20}
+do
+	echo $run
+	srun rgb2gray ../test_files/Kylo_Ren.jpg
+done
