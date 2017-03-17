@@ -56,9 +56,9 @@ int main() {
 	{
 		tid = omp_get_thread_num();
   		if (tid == 0) {
-    		nthreads = omp_get_num_threads();
-    		printf("\nNumber of threads = %d\nChunk size: %d\n", nthreads, chunk);
-    	}		
+    			nthreads = omp_get_num_threads();
+	    		printf("\nNumber of threads = %d\nChunk size: %d\n", nthreads, chunk);
+    		}		
 
 		#pragma omp for schedule(static, chunk)
 		for(i=0; i<SIZE; i++) {
