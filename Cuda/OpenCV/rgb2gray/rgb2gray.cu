@@ -66,7 +66,18 @@ int main(int argc, char** argv) {
         	printf("Error reservando memoria para d_ImageOut\n");
 	 	exit(-1);
 	}
-	
+
+	// Start conversion with OpenCV
+	start_opencv = clock();
+	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
+	end_opencv = clock();
+	// End conversion
+	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
+	//printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
+	printf("%.10f,", time_used_opencv);
+
+	imwrite("image_out_opencv.jpg", image_out_opencv);
+
 	// Start conversion with cuda	
 	start_cuda = clock();
 	err = cudaMemcpy(d_ImageData, h_ImageData, sizeImage, cudaMemcpyHostToDevice);
@@ -87,23 +98,16 @@ int main(int argc, char** argv) {
 	end_cuda = clock();
 	// End conversion
 	time_used_cuda = ((double) (end_cuda - start_cuda)) /CLOCKS_PER_SEC;
-	printf("Tiempo algoritmo en CUDA: %.10f\n", time_used_cuda);
-	
+	//printf("Tiempo algoritmo en CUDA: %.10f\n", time_used_cuda);
+	printf("%.10f,", time_used_cuda);
+
 	image_out_cuda.create(height, width, CV_8UC1);
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	// Start conversion with OpenCV
-	start_opencv = clock();
-	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
-	end_opencv = clock();
-	// End conversion
-	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
-	printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
-	printf("Aceleración obtenida: %.10f\n", time_used_opencv/time_used_cuda);
-	imwrite("image_out_opencv.jpg", image_out_opencv);
-	
-	printf("Done\n\n");
+	printf("%.10f\n", time_used_opencv/time_used_cuda);
+		
+	//printf("Done\n\n");
 	//showImage(image, "Image In");
 	//showImage(image_out_cuda, "Image out CUDA");
 	//showImage(image_out_opencv, "Image out OpenCV");
