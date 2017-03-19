@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 		width = atoi(argv[1]);
 		//printf("Matrix size: %d\n", width);
 	}
-	printf("%d,", width);
+	//printf("%d,", width);
 	clock_t start_serial, end_serial, start_cuda, end_cuda;
 	double time_used_serial, time_used_cuda;
 	cudaError_t err = cudaSuccess;
