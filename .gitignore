@@ -10,3 +10,5 @@ rgb2gray
 image_out.jpg
 image_out_cuda.jpg
 image_out_opencv.jpg
+cuda_matrix_mult
+/build
