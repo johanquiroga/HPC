@@ -9,7 +9,7 @@
 
 for i in {1..3}
 do
-	echo "Imagen: img$i.jpg"
+	echo "Imagen: img$i.jpg,,,"
 	echo "Iteracion,opencv,cuda,aceleracion"
 	for run in {1..20}
 	do
