@@ -7,7 +7,7 @@
 #SBATCH --gres=gpu:1
 
 #echo $CUDA_VISIBLE_DEVICES
-echo "Tamaño,secuencial,cuda,aceleracion,result"
+echo "Tamaño,secuencial,cuda,aceleracion,resultado"
 for run in {1..20}
 do
 	argv=$((run*100))
