@@ -1,0 +1,6 @@
+cmake_minimum_required (VERSION 2.8)
+project (cuda_matrix_mult)
+find_package(CUDA REQUIRED)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
+CUDA_ADD_EXECUTABLE(cuda_matrix_mult cuda_matrix_mult.cu)
