@@ -209,6 +209,7 @@ int main(int argc, char** argv) {
 	//printMatrix(h_A, width);
 	//printMatrix(h_B, width);
 	//printMatrix(h_C, width);
+	//printMatrix(h_C_tiled, width);
 	//printMatrix(compare_C, width);
 	
 	//printf("\nAceleración obtenida: %.10f\n", time_used_serial/time_used_cuda);
