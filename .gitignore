@@ -6,6 +6,7 @@ cuda_vector_add
 grey_scale
 vector_add
 */*/build
+*/*/*/build
 rgb2gray
 image_out.jpg
 image_out_cuda.jpg
