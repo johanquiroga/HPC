@@ -9,8 +9,8 @@
 #echo $CUDA_VISIBLE_DEVICES
 for size in {100,500,700,1000,2000}
 do
-	echo "Matrix size: $size x $size,,,,"
-	echo "iteracion,secuencial,cuda,aceleracion,resultado"
+	echo "Matrix size: $size x $size,,,,,"
+	echo "iteracion,secuencial,cuda,tiled,aceleracion,resultado"
 	for run in {1..20}
 	do
 		#argv=$((run*100))
