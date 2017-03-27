@@ -1,5 +1,5 @@
-Matrix size: 100 x 100|||||
-:---:|:---:|:---:|:---:|:---:|:---:
+Matrix size: 100 x 100:
+
 iteracion|secuencial|cuda|tiled|aceleracion|resultado
 :---:|:---:|:---:|:---:|:---:|:---:
 1|0.0063600000|0.1156630000|0.0001930000|32.9533678756|Good calculation
@@ -22,8 +22,9 @@ iteracion|secuencial|cuda|tiled|aceleracion|resultado
 18|0.0012060000|0.0715860000|0.0001930000|6.2487046632|Good calculation
 19|0.0012060000|0.0718700000|0.0001930000|6.2487046632|Good calculation
 20|0.0012120000|0.0716910000|0.0001940000|6.2474226804|Good calculation
-Matrix size: 500 x 500|||||
-:---:|:---:|:---:|:---:|:---:|:---:
+
+Matrix size: 500 x 500:
+
 iteracion|secuencial|cuda|tiled|aceleracion|resultado
 :---:|:---:|:---:|:---:|:---:|:---:
 1|0.1489430000|0.0743180000|0.0014580000|102.1556927298|Good calculation
@@ -46,8 +47,9 @@ iteracion|secuencial|cuda|tiled|aceleracion|resultado
 18|0.1489960000|0.0746810000|0.0014560000|102.3324175824|Good calculation
 19|0.1494120000|0.0747570000|0.0014520000|102.9008264463|Good calculation
 20|0.1490590000|0.0758540000|0.0014470000|103.0124395301|Good calculation
-Matrix size: 700 x 700|||||
-:---:|:---:|:---:|:---:|:---:|:---:
+
+Matrix size: 700 x 700:
+
 iteracion|secuencial|cuda|tiled|aceleracion|resultado
 :---:|:---:|:---:|:---:|:---:|:---:
 1|0.4084830000|0.0783270000|0.0026520000|154.0282805430|Good calculation
@@ -70,8 +72,9 @@ iteracion|secuencial|cuda|tiled|aceleracion|resultado
 18|0.4091740000|0.0782520000|0.0026590000|153.8826626551|Good calculation
 19|0.4083560000|0.0773250000|0.0026320000|155.1504559271|Good calculation
 20|0.4091220000|0.0786830000|0.0026510000|154.3274236137|Good calculation
-Matrix size: 1000 x 1000|||||
-:---:|:---:|:---:|:---:|:---:|:---:
+
+Matrix size: 1000 x 1000:
+
 iteracion|secuencial|cuda|tiled|aceleracion|resultado
 :---:|:---:|:---:|:---:|:---:|:---:
 1|1.1955320000|0.0838130000|0.0055650000|214.8305480683|Good calculation
@@ -94,8 +97,9 @@ iteracion|secuencial|cuda|tiled|aceleracion|resultado
 18|1.1951780000|0.0858150000|0.0059280000|201.6157219973|Good calculation
 19|1.1953600000|0.0856560000|0.0055730000|214.4912973264|Good calculation
 20|1.1979960000|0.0863380000|0.0055600000|215.4669064748|Good calculation
-Matrix size: 2000 x 2000|||||
-:---:|:---:|:---:|:---:|:---:|:---:
+
+Matrix size: 2000 x 2000:
+
 iteracion|secuencial|cuda|tiled|aceleracion|resultado
 :---:|:---:|:---:|:---:|:---:|:---:
 1|11.0191450000|0.1881340000|0.0314500000|350.3702702703|Good calculation
