@@ -95,6 +95,8 @@ void checkError(cudaError_t err, int line) {
 
 void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width) {
 	float *d_A, *d_B, *d_C;
+	cudaError_t err = cudaSuccess;
+	int size = width*width*sizeof(float);
 	err = cudaMalloc((void **)&d_A, size);
 	checkError(err, __LINE__);
 
@@ -134,8 +136,8 @@ int main(int argc, char** argv) {
 	//printf("%d,", width);
 	clock_t start_serial, end_serial, start_cuda, end_cuda;
 	double time_used_serial, time_used_cuda;
-	cudaError_t err = cudaSuccess;
-	int size = width*width*sizeof(float);
+	//cudaError_t err = cudaSuccess;
+	//int size = width*width*sizeof(float);
 	float *h_A = (float *) malloc(size);
 	float *h_B = (float *) malloc(size);
 	float *h_C = (float *) malloc(size);
