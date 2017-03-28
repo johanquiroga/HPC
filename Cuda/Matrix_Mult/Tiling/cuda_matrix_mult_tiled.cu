@@ -93,10 +93,11 @@ void checkError(cudaError_t err, int line) {
 	}
 }
 
-void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
+void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width, int size, double &time_used, int op) {
 	float *d_A, *d_B, *d_C;
+	clock_t start, end;
 	cudaError_t err = cudaSuccess;
-	//int size = width*width*sizeof(float);
+	
 	err = cudaMalloc((void **)&d_A, size);
 	checkError(err, __LINE__);
 
@@ -105,7 +106,8 @@ void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
 
 	err = cudaMalloc((void **)&d_C, size);
 	checkError(err, __LINE__);
-
+	
+	start = clock();
 	err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
 	checkError(err, __LINE__);
 
@@ -115,43 +117,19 @@ void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
 	int blockSize = 32;
 	dim3 dimBlock(blockSize, blockSize, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), ceil(width/float(blockSize)), 1);
-	matrixMultDevice<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, width);
-	cudaDeviceSynchronize();
+	if(op == 0) {
+		matrixMultDevice<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, width);
+		cudaDeviceSynchronize();
+	} else if(op == 1) {
+		matrixMultTiled<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, width);
+		cudaDeviceSynchronize();
+	}
 	
 	err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
 	checkError(err, __LINE__);
-
-	cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
-}
-
-void cudaTileKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
-	float *d_A, *d_B, *d_C;
-	cudaError_t err = cudaSuccess;
-	//int size = width*width*sizeof(float);
-	err = cudaMalloc((void **)&d_A, size);
-	checkError(err, __LINE__);
-
-	err = cudaMalloc((void **)&d_B, size);
-	checkError(err, __LINE__);
-
-	err = cudaMalloc((void **)&d_C, size);
-	checkError(err, __LINE__);
-
-	err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
-	checkError(err, __LINE__);
-
-	err = cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
-	checkError(err, __LINE__);
+	end = clock();
+	time_used = ((double)(end - start))/CLOCKS_PER_SEC;
 	
-	int blockSize = 32;
-	dim3 dimBlock(blockSize, blockSize, 1);
-	dim3 dimGrid(ceil(width/float(blockSize)), ceil(width/float(blockSize)), 1);
-	matrixMultTiled<<<dimGrid, dimBlock>>>(d_A, d_B, d_C, width);
-	cudaDeviceSynchronize();
-	
-	err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
-	checkError(err, __LINE__);
-
 	cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
 }
 
@@ -161,7 +139,7 @@ int main(int argc, char** argv) {
 	int result = -1;
 	f_serial = f_cuda = f_cudaTiled = false;
 	if(argc < 2) {
-		printf("Matrix size missing!!");
+		printf("Matrix size missing!!\n");
 		return -1;
 	} else {
 		width = atoi(argv[1]);
@@ -177,7 +155,7 @@ int main(int argc, char** argv) {
 		else if(arg == "t")
 			f_cudaTiled = true;
 	}
-	clock_t start_serial, end_serial, start_cuda, end_cuda, start_tiled, end_tiled;
+	clock_t start_serial, end_serial;
 	double time_used_serial, time_used_cuda, time_used_tiled, acc;
 	time_used_serial = time_used_cuda = time_used_tiled = acc = 0.0;
 	int size = width*width*sizeof(float);
@@ -209,10 +187,7 @@ int main(int argc, char** argv) {
 	if(f_cuda) {
 		
 		/////////////////////Algoritmo paralelo///////////////////////////
-		start_cuda = clock();
-		cudaKernelCall(h_A, h_B, h_C, width, size);
-		end_cuda = clock();
-		time_used_cuda = ((double)(end_cuda - start_cuda))/CLOCKS_PER_SEC;
+		cudaKernelCall(h_A, h_B, h_C, width, size, time_used_cuda, 0);
 		//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
 		printf("%.10f,", time_used_cuda);
 		//////////////////////////////////////////////////////////////////
@@ -226,10 +201,7 @@ int main(int argc, char** argv) {
 	if(f_cudaTiled) {
 		
 		/////////Algoritmo paralelo con memmoria compartida///////////////
-		start_tiled = clock();
-		cudaTileKernelCall(h_A, h_B, h_C_tiled, width, size);
-		end_tiled = clock();
-		time_used_tiled = ((double)(end_tiled - start_tiled))/CLOCKS_PER_SEC;
+		cudaKernelCall(h_A, h_B, h_C_tiled, width, size, time_used_tiled, 1);
 		//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
 		printf("%.10f,", time_used_tiled);
 		//////////////////////////////////////////////////////////////////
@@ -274,6 +246,5 @@ int main(int argc, char** argv) {
 	}
 	
 	free(h_A); free(h_B); free(h_C); free(compare_C); free(h_C_tiled);
-	//cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
 	return 0;
 }
