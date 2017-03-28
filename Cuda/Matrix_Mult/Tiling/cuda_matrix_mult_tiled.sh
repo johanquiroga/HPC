@@ -15,6 +15,6 @@ do
 	do
 		#argv=$((run*100))
 		echo -n "$run,"
-		./build/cuda_matrix_mult_tiled $size
+		./build/cuda_matrix_mult_tiled $size s c t
 	done
 done
