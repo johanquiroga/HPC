@@ -124,7 +124,7 @@ iteracion|secuencial|cuda|tiled|aceleracion|resultado
 20|11.0539060000|0.1603790000|0.0291210000|379.5853851173|Good calculation
 
 ## **Gráfica de Tiempos:**
-![Grafica de tiempos](/imgs/grafica_tiempos.png)
+![Grafica de tiempos](imgs/grafica_tiempos.png)
 
 ## **Gráfica de Aceleración:**
-![Grafica de aceleracion](/imgs/grafica_aceleracion.png)
+![Grafica de aceleracion](imgs/grafica_aceleracion.png)
