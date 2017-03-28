@@ -2,8 +2,8 @@
 #include <cuda.h>
 #include <math.h>
 #include <time.h>
+#include <string>
 
-#define TAM 2
 #define TILE_WIDTH 32
 
 __global__ void matrixMultTiled(float* d_A, float* d_B, float* d_C, int width) {
@@ -68,13 +68,13 @@ void matrixMultHost(float *h_A, float *h_B, float *h_C, int width) {
 	}
 }
 
-bool compareResults(float* h_C, float* d_C, int width) {
+int compareResults(float* h_C, float* d_C, int width) {
 	for(int i=0; i<width*width; i++) {
 		if(h_C[i] != d_C[i]) {
-			return false;
+			return 0;
 		}
 	}
-	return true;
+	return 1;
 }
 
 void printMatrix(float *A, int width) {
@@ -93,10 +93,10 @@ void checkError(cudaError_t err, int line) {
 	}
 }
 
-void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width) {
+void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
 	float *d_A, *d_B, *d_C;
 	cudaError_t err = cudaSuccess;
-	int size = width*width*sizeof(float);
+	//int size = width*width*sizeof(float);
 	err = cudaMalloc((void **)&d_A, size);
 	checkError(err, __LINE__);
 
@@ -124,10 +124,10 @@ void cudaKernelCall(float* h_A, float* h_B, float* h_C, int width) {
 	cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
 }
 
-void cudaTileKernelCall(float* h_A, float* h_B, float* h_C, int width) {
+void cudaTileKernelCall(float* h_A, float* h_B, float* h_C, int width, int size) {
 	float *d_A, *d_B, *d_C;
 	cudaError_t err = cudaSuccess;
-	int size = width*width*sizeof(float);
+	//int size = width*width*sizeof(float);
 	err = cudaMalloc((void **)&d_A, size);
 	checkError(err, __LINE__);
 
@@ -156,17 +156,30 @@ void cudaTileKernelCall(float* h_A, float* h_B, float* h_C, int width) {
 }
 
 int main(int argc, char** argv) {
-	int width = TAM;
-	if(argc != 2) {
-		//printf("Matrix size missing!!, using %d\n", TAM);
-		//exit(EXIT_FAILURE);
+	int width;
+	bool f_serial, f_cuda, f_cudaTiled;
+	int result = -1;
+	f_serial = f_cuda = f_cudaTiled = false;
+	if(argc < 2) {
+		printf("Matrix size missing!!");
+		return -1;
 	} else {
 		width = atoi(argv[1]);
 		//printf("Matrix size: %d\n", width);
 	}
 	//printf("%d,", width);
+	for(int i = 2; i < argc; i++) {
+		std::string arg = argv[i];
+		if(arg == "s")
+			f_serial = true;
+		else if(arg == "c")
+			f_cuda = true;
+		else if(arg == "t")
+			f_cudaTiled = true;
+	}
 	clock_t start_serial, end_serial, start_cuda, end_cuda, start_tiled, end_tiled;
-	double time_used_serial, time_used_cuda, time_used_tiled;
+	double time_used_serial, time_used_cuda, time_used_tiled, acc;
+	time_used_serial = time_used_cuda = time_used_tiled = acc = 0.0;
 	int size = width*width*sizeof(float);
 	float *h_A = (float *) malloc(size);
 	float *h_B = (float *) malloc(size);
@@ -179,32 +192,66 @@ int main(int argc, char** argv) {
 		h_A[i]=rand()%10;
 		h_B[i]=rand()%10;
 	}
-	/////////////////////Algoritmo serial//////////////////////////////////
-	start_serial = clock();
-	matrixMultHost(h_A, h_B, compare_C, width);
-	end_serial = clock();
-	time_used_serial = ((double)(end_serial - start_serial))/CLOCKS_PER_SEC;
-	//printf("Tiempo en serial: %.10f\n", time_used_serial);
-	printf("%.10f,", time_used_serial);	
-	///////////////////////////////////////////////////////////////////////
+		       
+	if(f_serial) {
+		
+		/////////////////////Algoritmo serial//////////////////////////////////
+		start_serial = clock();
+		matrixMultHost(h_A, h_B, compare_C, width);
+		end_serial = clock();
+		time_used_serial = ((double)(end_serial - start_serial))/CLOCKS_PER_SEC;
+		//printf("Tiempo en serial: %.10f\n", time_used_serial);
+		printf("%.10f,", time_used_serial);	
+		///////////////////////////////////////////////////////////////////////
+	} else
+		printf("-,");
 	
-	/////////////////////Algoritmo paralelo///////////////////////////
-	start_cuda = clock();
-	cudaKernelCall(h_A, h_B, h_C_tiled, width);
-	end_cuda = clock();
-	time_used_cuda = ((double)(end_cuda - start_cuda))/CLOCKS_PER_SEC;
-	//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
-	printf("%.10f,", time_used_cuda);
-	//////////////////////////////////////////////////////////////////
-
-	/////////Algoritmo paralelo con memmoria compartida///////////////
-	start_tiled = clock();
-	cudaTileKernelCall(h_A, h_B, h_C, width);
-	end_tiled = clock();
-	time_used_tiled = ((double)(end_tiled - start_tiled))/CLOCKS_PER_SEC;
-	//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
-	printf("%.10f,", time_used_tiled);
-	//////////////////////////////////////////////////////////////////
+	if(f_cuda) {
+		
+		/////////////////////Algoritmo paralelo///////////////////////////
+		start_cuda = clock();
+		cudaKernelCall(h_A, h_B, h_C, width, size);
+		end_cuda = clock();
+		time_used_cuda = ((double)(end_cuda - start_cuda))/CLOCKS_PER_SEC;
+		//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
+		printf("%.10f,", time_used_cuda);
+		//////////////////////////////////////////////////////////////////
+		if(f_serial) {
+			acc = time_used_serial/time_used_cuda;
+			result = compareResults(compare_C, h_C, width);
+		}
+	} else
+		printf("-,");
+	
+	if(f_cudaTiled) {
+		
+		/////////Algoritmo paralelo con memmoria compartida///////////////
+		start_tiled = clock();
+		cudaTileKernelCall(h_A, h_B, h_C_tiled, width, size);
+		end_tiled = clock();
+		time_used_tiled = ((double)(end_tiled - start_tiled))/CLOCKS_PER_SEC;
+		//printf("Tiempo en CUDA: %.10f\n", time_used_cuda);
+		printf("%.10f,", time_used_tiled);
+		//////////////////////////////////////////////////////////////////
+		if(f_cuda) {
+			if(f_serial) {
+				acc = time_used_serial/time_used_tiled;
+				result = compareResults(compare_C, h_C_tiled, width);
+			}
+			else {
+				acc = time_used_cuda/time_used_tiled;
+				result = compareResults(h_C_tiled, h_C, width);
+			}
+		} else {
+			if(f_serial) {
+				acc = time_used_serial/time_used_tiled;
+				result = compareResults(compare_C, h_C_tiled, width);
+			} else {
+				acc = 0.0;
+			}
+		}
+	} else
+		printf("-,");
 
 	//printMatrix(h_A, width);
 	//printMatrix(h_B, width);
@@ -213,9 +260,14 @@ int main(int argc, char** argv) {
 	//printMatrix(compare_C, width);
 	
 	//printf("\nAceleración obtenida: %.10f\n", time_used_serial/time_used_cuda);
-	printf("%.10f,", time_used_serial/time_used_tiled);
+	if(acc != 0.0)
+		printf("%.10f,", acc);
+	else
+		printf("-,");
 
-	if(compareResults(compare_C, h_C_tiled, width)) {
+	if(result < 0) {
+		printf("-\n");
+	} else if(result > 0) {
 		printf("Good calculation\n");
 	} else {
 		printf("Bad calculation\n");
