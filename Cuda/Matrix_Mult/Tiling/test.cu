@@ -2,6 +2,7 @@
 #include <cuda.h>
 #include <math.h>
 #include <time.h>
+#include <string>
 
 #define TAM 2
 #define TILE_WIDTH 32
@@ -161,7 +162,7 @@ int main(int argc, char** argv) {
 	int result = -1;
 	f_serial = f_cuda = f_cudaTiled = false;
 	if(argc < 2) {
-		printf("Matrix size missing!!);
+		printf("Matrix size missing!!");
 		return -1;
 	} else {
 		width = atoi(argv[1]);
@@ -218,7 +219,7 @@ int main(int argc, char** argv) {
 		//////////////////////////////////////////////////////////////////
 		if(f_serial) {
 			acc = time_used_serial/time_used_cuda;
-			result = compare(compare_C, h_C, width);
+			result = compareResults(compare_C, h_C, width);
 		}
 	} else
 		printf("-,");
@@ -236,16 +237,16 @@ int main(int argc, char** argv) {
 		if(f_cuda) {
 			if(f_serial) {
 				acc = time_used_serial/time_used_tiled;
-				result = compare(compare_C, h_C_tiled, width);
+				result = compareResults(compare_C, h_C_tiled, width);
 			}
 			else {
 				acc = time_used_cuda/time_used_tiled;
-				result = compare(h_C_tiled, h_C, width);
+				result = compareResults(h_C_tiled, h_C, width);
 			}
 		} else {
 			if(f_serial) {
 				acc = time_used_serial/time_used_tiled;
-				result = compare(compare_C, h_C_tiled, width);
+				result = compareResults(compare_C, h_C_tiled, width);
 			} else {
 				acc = 0.0;
 			}
