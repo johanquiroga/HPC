@@ -6,7 +6,7 @@ En el presente informe se busca presentar la implementación del algoritmo de mu
 
 ## II.  Desarrollo del tema
 
-Hasta ahora se venía trabajando con un kernel de CUDA (ver [Figura 1][fig1]) el cual era ejecutado por una gran cantidad de hilos al mismo tiempo, cada uno calculando un único valor de la matriz resultado. Para esto se debían copiar previamente los datos de las matrices que se iban a multiplicar a la memmoria global del dispositivo, una vez copiados se procedía con el procesamiento de estos datos (lanzamiento del kernel).
+Hasta ahora se venía trabajando con un kernel de CUDA (ver [Figura 1](#figura-1-kernel-multiplicación-de-matrices)) el cual era ejecutado por una gran cantidad de hilos al mismo tiempo, cada uno calculando un único valor de la matriz resultado. Para esto se debían copiar previamente los datos de las matrices que se iban a multiplicar a la memmoria global del dispositivo, una vez copiados se procedía con el procesamiento de estos datos (lanzamiento del kernel).
 ```c
 __global__ void matrixMultDevice(float* d_A, float* d_B, float* d_C, int width) {
 	int Row = blockDim.y * blockIdx.y + threadIdx.y;
@@ -34,7 +34,7 @@ La misma sincronización se debe realizar una vez los hilos terminen de calcular
 
 Así como en la versión del kernel anterior se debía tener en cuenta solo los hilos que estaban dentro del rango de datos; en esta nueva versión se debe garantizar la misma situación para los hilos en el rango del *tile* y rango de datos correcto. Esto se logra con una comparación similar a la hecha anteriormente. En este caso, si el hilo que se está ejecutando falla esta condición, debe cargar un 0 en el espacio de memoria compartida que le corresponde, esto es necesario ya que de lo contrario es muy posible que se este dejando contenido basura en dicho espacio que puede alterar el resultado del cálculo.
 
-El código del kernel para la multiplicación de matrices utilizando memoria compartida, y teniendo en cuenta lo dicho, queda de la siguiente manera (ver [Figura 2][fig2]):
+El código del kernel para la multiplicación de matrices utilizando memoria compartida, y teniendo en cuenta lo dicho, queda de la siguiente manera (ver [Figura 2](#figura-2-kernel-multiplicacion-de-matrices-con-memoria-compartida)):
 
 ```c
 __global__ void matrixMultTiled(float* d_A, float* d_B, float* d_C, int width) {
@@ -96,15 +96,10 @@ Estos fueron los resultados:
 ![Grafica de aceleracion](imgs/grafica_aceleracion.png)  
 *Grafica 2: tamaño de matriz contra aceleración obtenida*
 
-Como se puede ver para matrices pequeñas la mejora en el tiempo de ejecución no es mucha, sin embargo para matrices grandes la mejora en los tiempos de ejecución es muy significativa entre la versión secuencial y la paralela con memoria compartida obteniendo una aceleración de hasta 380X. Incluso, de acuerdo a la [Gráfica 1][graf1], mediante el uso de memoria compartida se puede lograr una reducción en los tiempos de ejcución de un poco más de la mitad con respecto a la versión sin memoria compartida, esto quiere decir una mejora de entre 2X y 3X en rendimiento.
+Como se puede ver para matrices pequeñas la mejora en el tiempo de ejecución no es mucha, sin embargo para matrices grandes la mejora en los tiempos de ejecución es muy significativa entre la versión secuencial y la paralela con memoria compartida obteniendo una aceleración de hasta 380X. Incluso, de acuerdo a la [Gráfica 1](#grafica-de-tiempos), mediante el uso de memoria compartida se puede lograr una reducción en los tiempos de ejcución de un poco más de la mitad con respecto a la versión sin memoria compartida, esto quiere decir una mejora de entre 2X y 3X en rendimiento.
 
 ## IV.  Conclusiones
 
 Aunque la memoria compartida sea de poca capacidad de almacenamiento no significa que no se pueda utilizar para procesar grandes cantidades de datos. Para esto se hace uso de del método de *Tiling*, el cual permite aprovechar las capacidades de estas memorias.
 
 El uso de memoria compartida para acceder a los datos que se van a procesar, aunque es un poco más complejo de implementar y se deben tener ciertas consideraciones de cuidado, representa una mejora significativa en cuanto a rendimiento contra el uso de memoria global.
-
-
-[fig1]: #figura-1-kernel-multiplicación-de-matrices
-[fig2]: #figura-2-kernel-multiplicacion-de-matrices-con-memoria-compartida
-[graf1]: #grafica-de-tiempos
