@@ -34,7 +34,7 @@ La misma sincronización se debe realizar una vez los hilos terminen de calcular
 
 Así como en la versión del kernel anterior se debía tener en cuenta solo los hilos que estaban dentro del rango de datos; en esta nueva versión se debe garantizar la misma situación para los hilos en el rango del *tile* y rango de datos correcto. Esto se logra con una comparación similar a la hecha anteriormente. En este caso, si el hilo que se está ejecutando falla esta condición, debe cargar un 0 en el espacio de memoria compartida que le corresponde, esto es necesario ya que de lo contrario es muy posible que se este dejando contenido basura en dicho espacio que puede alterar el resultado del cálculo.
 
-El código del kernel para la multiplicación de matrices utilizando memoria compartida, y teniendo en cuenta lo dicho, queda de la siguiente manera (ver [Figura 2](#figura-2-kernel-multiplicacion-de-matrices-con-memoria-compartida)):
+El código del kernel para la multiplicación de matrices utilizando memoria compartida, y teniendo en cuenta lo dicho, queda de la siguiente manera (ver [Figura 2](#figura-2-kernel-multiplicación-de-matrices-con-memoria-compartida)):
 
 ```c
 __global__ void matrixMultTiled(float* d_A, float* d_B, float* d_C, int width) {
@@ -96,7 +96,7 @@ Estos fueron los resultados:
 ![Grafica de aceleracion](imgs/grafica_aceleracion.png)  
 *Grafica 2: tamaño de matriz contra aceleración obtenida*
 
-Como se puede ver para matrices pequeñas la mejora en el tiempo de ejecución no es mucha, sin embargo para matrices grandes la mejora en los tiempos de ejecución es muy significativa entre la versión secuencial y la paralela con memoria compartida obteniendo una aceleración de hasta 380X. Incluso, de acuerdo a la [Gráfica 1](#grafica-de-tiempos), mediante el uso de memoria compartida se puede lograr una reducción en los tiempos de ejcución de un poco más de la mitad con respecto a la versión sin memoria compartida, esto quiere decir una mejora de entre 2X y 3X en rendimiento.
+Como se puede ver para matrices pequeñas la mejora en el tiempo de ejecución no es mucha, sin embargo para matrices grandes la mejora en los tiempos de ejecución es muy significativa entre la versión secuencial y la paralela con memoria compartida obteniendo una aceleración de hasta 380X. Incluso, de acuerdo a la [Gráfica 1](#gráfica-de-tiempos), mediante el uso de memoria compartida se puede lograr una reducción en los tiempos de ejcución de un poco más de la mitad con respecto a la versión sin memoria compartida, esto quiere decir una mejora de entre 2X y 3X en rendimiento.
 
 ## IV.  Conclusiones
 
