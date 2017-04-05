@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
 	showImage(image_out_cuda, "Image out CUDA");
 	//showImage(image_out_opencv, "Image out OpenCV");
 	showImage(image_out_host, "Image out Host");
-	//waitKey(0);
+	waitKey(0);
 	free(h_ImageOut); free(image_sobel); cudaFree(d_ImageData); cudaFree(d_ImageOut); cudaFree(d_image_Sobel);
 	return 0;
 }
