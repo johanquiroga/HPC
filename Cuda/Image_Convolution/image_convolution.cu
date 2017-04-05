@@ -92,15 +92,18 @@ int main(int argc, char** argv) {
 	}
 
 	// Start conversion with OpenCV
-	start_opencv = clock();
+	image_sobel = (unsigned char *) malloc (sizeImageGrey);
 	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
 	cv_gray_image = (unsigned char *) malloc (sizeImageGrey);
 	cv_gray_image = image_out_opencv.data;
+
+	start_opencv = clock();
 	h_sobelFilter(cv_gray_image, image_sobel, width, height, 3, h_M);
+	end_opencv = clock();
+	
 	image_out_host.create(height, width, CV_8UC1);
 	image_out_host.data = image_sobel;
 	imwrite("image_out_host.jpg", image_out_host);
-	end_opencv = clock();
 	// End conversion
 	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
 	//printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
