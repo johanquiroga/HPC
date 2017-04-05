@@ -77,10 +77,10 @@ int main(int argc, char** argv) {
 	cudaError_t err = cudaSuccess;
 	char* image_name = argv[1], *d_M;
 	char h_M[] = {-1,0,1,-2,0,2,-1,0,1};
-	clock_t start_cuda, end_cuda, start_opencv, end_opencv;
-	double time_used_cuda, time_used_opencv;
+	clock_t start_cuda, end_cuda, start_opencv, end_opencv, start_host, end_host, start_opencv_gpu, end_opencv_gpu;
+	double time_used_cuda, time_used_opencv, time_used_host, time_used_opencv_gpu;
 	int width, height, sizeImageGrey, sizeImage;
-	Mat image, image_out_cuda, image_out_opencv, image_out_host, image_out_opencv_gpu;
+	Mat image, image_out_cuda, image_gray_opencv, image_gray_host, image_out_host, image_out_opencv_gpu, image_out_opencv, abs_image_out_opencv;
 	unsigned char *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut, *image_sobel, *d_image_Sobel, *cv_gray_image;
 	Size imageSize; 
 
@@ -102,6 +102,7 @@ int main(int argc, char** argv) {
 	sizeImage = sizeof(unsigned char)*width*height*image.channels();
 	sizeImageGrey = sizeof(unsigned char)*width*height;
 	
+	cv_gray_image = (unsigned char *) malloc (sizeImageGrey);
 	h_ImageData = (unsigned char *) malloc (sizeImage);
 	h_ImageData = image.data;
 	h_ImageOut = (unsigned char *) malloc (sizeImageGrey);
@@ -126,24 +127,31 @@ int main(int argc, char** argv) {
 	 	exit(-1);
 	}
 
-	// Start conversion with OpenCV
-	start_opencv = clock();
+	// Start conversion from Host
+	start_host = clock();
 	image_sobel = (unsigned char *) malloc (sizeImageGrey);
-	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
-	cv_gray_image = (unsigned char *) malloc (sizeImageGrey);
-	cv_gray_image = image_out_opencv.data;
+	cvtColor(image, image_gray_host, CV_BGR2GRAY);
+	cv_gray_image = image_gray_host.data;
 	h_sobelFilter(cv_gray_image, image_sobel, width, height, 3, h_M);
-	end_opencv = clock();
-	
+	end_host = clock();
+	// End conversion
 	image_out_host.create(height, width, CV_8UC1);
 	image_out_host.data = image_sobel;
 	imwrite("image_out_host.jpg", image_out_host);
-	// End conversion
-	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
+	time_used_host = ((double) (end_host - start_host)) /CLOCKS_PER_SEC;
 	//printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
-	printf("%.10f,", time_used_opencv);
+	printf("%.10f,", time_used_host);
 
-	//imwrite("image_out_opencv.jpg", image_out_opencv);
+	// Start conversion with OpenCV
+	start_opencv = clock();
+	cvtColor(image, image_gray_opencv, CV_BGR2GRAY);
+	Sobel(image_gray_opencv, image_out_opencv, CV_8UC1, 1, 0, 3);
+	convertScaleAbs(image_out_opencv, abs_image_out_opencv);
+	end_opencv = clock();
+	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
+	printf("%.10f,", time_used_opencv);
+	
+	imwrite("image_out_opencv.jpg", abs_image_out_opencv);
 
 	// Start conversion with cuda	
 	start_cuda = clock();
@@ -181,13 +189,13 @@ int main(int argc, char** argv) {
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	printf("%.10f\n", time_used_opencv/time_used_cuda);
+	printf("%.10f\n", time_used_host/time_used_cuda);
 		
-	printf("Done\n\n");
+	//printf("Done\n\n");
 	//showImage(image, "Image In");
-	showImage(image_out_cuda, "Image out CUDA");
-	//showImage(image_out_opencv, "Image out OpenCV");
 	showImage(image_out_host, "Image out Host");
+	showImage(abs_image_out_opencv, "Image out OpenCV");
+	showImage(image_out_cuda, "Image out CUDA");
 	waitKey(0);
 	free(h_ImageOut); free(image_sobel); cudaFree(d_ImageData); cudaFree(d_ImageOut); cudaFree(d_image_Sobel);
 	return 0;
