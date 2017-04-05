@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
 	//printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
 	printf("%.10f,", time_used_opencv);
 
-	imwrite("image_out_opencv.jpg", image_out_opencv);
+	//imwrite("image_out_opencv.jpg", image_out_opencv);
 
 	// Start conversion with cuda	
 	start_cuda = clock();
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 
 	image_out_cuda.create(height, width, CV_8UC1);
 	image_out_cuda.data = h_ImageOut;
-	imwrite("image_out_cuda.jpg", image_out_cuda);
+	//imwrite("image_out_cuda.jpg", image_out_cuda);
 
 	printf("%.10f\n", time_used_opencv/time_used_cuda);
 		
