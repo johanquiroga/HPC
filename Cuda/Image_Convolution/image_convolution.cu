@@ -10,6 +10,31 @@
 
 using namespace cv;
 
+__global__ void d_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, int width, int height, int maskWidth, char* M) {
+	int Row = blockDim.y * blockIdx.y + threadIdx.y;
+	int Col = blockDim.x * blockIdx.x + threadIdx.x;
+
+	int nrow = Row - (maskWidth/2);
+	int ncol = Col - (maskWidth/2);
+	int res = 0;
+
+	if(Row < height && Col < width) {
+		for(int i=0; i<maskWidth; i++) {
+			for(int j=0; j<maskWidth; j++) {
+				if((nrow + i >= 0 && nrow + i < height) && (ncol + j >= 0 && ncol + j < width)) {
+					res += imageIn[(nrow + i)*width + (ncol + j)] * M[i*maskWidth + j];
+				}
+			}
+		}
+		if(res < 0)
+			res = 0;
+		else
+			if(res > 255)
+				res = 255;
+		imageOut[Row*width+Col] = (unsigned char)res;
+	}
+}
+
 __global__ void rgb2gray(unsigned char* d_Pin, unsigned char* d_Pout, int width, int height) {
 	int Row = blockIdx.y*blockDim.y + threadIdx.y;
 	int Col = blockIdx.x*blockDim.x + threadIdx.x;
@@ -33,7 +58,7 @@ void h_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, int width, i
 			int res = 0;
 			for(int k=0; k < maskWidth; k++) {
 				for(int w=0; w < maskWidth; w++) {
-					if((ni + k >=0 && ni + k <height) && (nj + w >=0 && nj + w <width)) {
+					if((ni + k >= 0 && ni + k < height) && (nj + w >= 0 && nj + w < width)) {
 						res += imageIn[(ni + k)*width + (nj + w)] * M[k*maskWidth + w];
 					}
 				}
@@ -90,14 +115,23 @@ int main(int argc, char** argv) {
         	printf("Error reservando memoria para d_ImageOut\n");
 	 	exit(-1);
 	}
+	err = cudaMalloc((void **)&d_M, sizeof(char)*9);
+	if(err != cudaSuccess){
+        	printf("Error reservando memoria para d_M\n");
+	 	exit(-1);
+	}
+	err = cudaMalloc((void **)&d_image_Sobel, sizeImageGrey);
+	if(err != cudaSuccess){
+        	printf("Error reservando memoria para d_image_Sobel\n");
+	 	exit(-1);
+	}
 
 	// Start conversion with OpenCV
+	start_opencv = clock();
 	image_sobel = (unsigned char *) malloc (sizeImageGrey);
 	cvtColor(image, image_out_opencv, CV_BGR2GRAY);
 	cv_gray_image = (unsigned char *) malloc (sizeImageGrey);
 	cv_gray_image = image_out_opencv.data;
-
-	start_opencv = clock();
 	h_sobelFilter(cv_gray_image, image_sobel, width, height, 3, h_M);
 	end_opencv = clock();
 	
@@ -118,14 +152,23 @@ int main(int argc, char** argv) {
         	printf("Error copiando los datos de h_ImageData a d_ImageData\n");
 	 	exit(-1);
 	}
-	
-	dim3 dimBlock(32, 32, 1);
-	dim3 dimGrid(ceil(width/32.0), ceil(height/32.0));
-	rgb2gray<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height);
-		
-	err = cudaMemcpy(h_ImageOut, d_ImageOut, sizeImageGrey, cudaMemcpyDeviceToHost);
+	err = cudaMemcpy(d_M, h_M, sizeof(char)*9, cudaMemcpyHostToDevice);
 	if(err != cudaSuccess){
-        	printf("Error copiando los datos de d_ImageOut a h_ImageOut\n");
+        	printf("Error copiando los datos de h_M a d_M\n");
+	 	exit(-1);
+	}
+	
+	int blockSize = 32;
+	dim3 dimBlock(blockSize, blockSize, 1);
+	dim3 dimGrid(ceil(width/float(blockSize)), ceil(width/float(blockSize)), 1);
+	rgb2gray<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height);
+	cudaDeviceSynchronize();
+	d_sobelFilter<<<dimGrid, dimBlock>>>();
+	cudaDeviceSynchronize();
+		
+	err = cudaMemcpy(h_ImageOut, d_image_Sobel, sizeImageGrey, cudaMemcpyDeviceToHost);
+	if(err != cudaSuccess){
+        	printf("Error copiando los datos de d_image_Sobel a h_ImageOut\n");
 	 	exit(-1);
 	}
 	end_cuda = clock();
@@ -136,16 +179,16 @@ int main(int argc, char** argv) {
 
 	image_out_cuda.create(height, width, CV_8UC1);
 	image_out_cuda.data = h_ImageOut;
-	//imwrite("image_out_cuda.jpg", image_out_cuda);
+	imwrite("image_out_cuda.jpg", image_out_cuda);
 
 	printf("%.10f\n", time_used_opencv/time_used_cuda);
 		
 	printf("Done\n\n");
 	//showImage(image, "Image In");
-	//showImage(image_out_cuda, "Image out CUDA");
+	showImage(image_out_cuda, "Image out CUDA");
 	//showImage(image_out_opencv, "Image out OpenCV");
-	showImage(image_out_host, "Image out OpenCV");
+	showImage(image_out_host, "Image out Host");
 	//waitKey(0);
-	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
+	free(h_ImageOut); free(image_sobel); cudaFree(d_ImageData); cudaFree(d_ImageOut); cudaFree(d_image_Sobel);
 	return 0;
 }
