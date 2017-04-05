@@ -5,11 +5,14 @@ mpi_matrix_mult
 cuda_vector_add
 grey_scale
 vector_add
+image_convolution
 */*/build
 */*/*/build
 rgb2gray
 image_out.jpg
 image_out_cuda.jpg
 image_out_opencv.jpg
+image_out_host.jpg
 cuda_matrix_mult
 /build
+*.nvvp
