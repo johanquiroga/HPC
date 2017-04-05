@@ -2,7 +2,7 @@ CUDAC = nvcc
 CFLAGS = `pkg-config --cflags opencv`
 LIBS = `pkg-config --libs opencv`
 
-rgb2gray: rgb2gray.cu
-	$(CUDAC) $(LIBS) -o rgb2gray rgb2gray.cu $(CFLAGS)
+image_convolution: image_convolution.cu
+	$(CUDAC) $(LIBS) -o image_convolution image_convolution.cu $(CFLAGS)
 clean:
-	rm rgb2gray
+	rm image_convolution
