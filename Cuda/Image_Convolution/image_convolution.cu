@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
 	cv_gray_image = image_gray_host.data;
 	h_sobelFilter(cv_gray_image, image_sobel, width, height, 3, h_M);
 	end_host = clock();
-	// End conversion
+	// End Host conversion
 	image_out_host.create(height, width, CV_8UC1);
 	image_out_host.data = image_sobel;
 	imwrite("image_out_host.jpg", image_out_host);
@@ -148,10 +148,11 @@ int main(int argc, char** argv) {
 	Sobel(image_gray_opencv, image_out_opencv, CV_8UC1, 1, 0, 3);
 	convertScaleAbs(image_out_opencv, abs_image_out_opencv);
 	end_opencv = clock();
+	imwrite("image_out_opencv.jpg", abs_image_out_opencv);
 	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
 	printf("%.10f,", time_used_opencv);
-	
-	imwrite("image_out_opencv.jpg", abs_image_out_opencv);
+	printf("%.10f,", time_used_host/time_used_opencv);
+	//End OpenCV conversion
 
 	// Start conversion with cuda	
 	start_cuda = clock();
@@ -180,7 +181,7 @@ int main(int argc, char** argv) {
 	 	exit(-1);
 	}
 	end_cuda = clock();
-	// End conversion
+	// End CUDA conversion
 	time_used_cuda = ((double) (end_cuda - start_cuda)) /CLOCKS_PER_SEC;
 	//printf("Tiempo algoritmo en CUDA: %.10f\n", time_used_cuda);
 	printf("%.10f,", time_used_cuda);
@@ -189,7 +190,7 @@ int main(int argc, char** argv) {
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	printf("%.10f\n", time_used_host/time_used_cuda);
+	printf("%.10f\n", time_used_opencv/time_used_cuda);
 		
 	//printf("Done\n\n");
 	//showImage(image, "Image In");
