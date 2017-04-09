@@ -164,6 +164,7 @@ int main(int argc, char** argv) {
 	//End OpenCV conversion
 
 	// Start conversion with OpenCVCuda
+	gpu::setDevice(0);
 	start_opencv_gpu = clock();
 	src.upload(image);
 	gpu::cvtColor(src, gray, CV_BGR2GRAY);
