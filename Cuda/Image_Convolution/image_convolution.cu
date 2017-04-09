@@ -1,8 +1,8 @@
 #include <cv.h>
 #include <highgui.h>
-#include <iostream>
 #include <cuda.h>
 #include <time.h>
+#include "opencv2/gpu/gpu.hpp"
 
 #define BLUE 0
 #define GREEN 1
@@ -84,12 +84,21 @@ int main(int argc, char** argv) {
 	unsigned char *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut, *image_sobel, *d_image_Sobel, *cv_gray_image;
 	Size imageSize;
 	gpu::GpuMat src, dst, gray;
+	bool show_flag = false;
 
 	//printf("Image name: %s\n", image_name);
 	image = imread(image_name, 1);
-	if(argc !=2 || !image.data){
+	if(argc < 2 || !image.data){
 	        printf("No image Data \n");
         	return -1;
+	} else if(argc == 3) {
+		std::string arg = argv[2];
+		if(arg == "p") {
+			show_flag = true;
+		} else {
+			printf("unknown flag: %s\n", arg.c_str());
+			return -1;
+		}
 	}
 
 	if(image.empty()) {
@@ -203,16 +212,18 @@ int main(int argc, char** argv) {
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	printf("%.10f\n", time_used_opencv/time_used_cuda);
+	printf("%.10f,", time_used_opencv/time_used_cuda);
 	printf("%.10f\n", time_used_opencv_gpu/time_used_cuda);
 		
 	//printf("Done\n\n");
 	//showImage(image, "Image In");
-	showImage(image_out_host, "Image out Host");
-	showImage(abs_image_out_opencv, "Image out OpenCV");
-	showImage(image_out_opencv_gpu, "Image out OpenCVCuda");
-	showImage(image_out_cuda, "Image out CUDA");
-	waitKey(0);
+	if(show_flag) {
+		showImage(image_out_host, "Image out Host");
+		showImage(abs_image_out_opencv, "Image out OpenCV");
+		showImage(image_out_opencv_gpu, "Image out OpenCVCuda");
+		showImage(image_out_cuda, "Image out CUDA");
+		waitKey(0);
+	}
 	free(h_ImageOut); free(image_sobel); cudaFree(d_ImageData); cudaFree(d_ImageOut); cudaFree(d_image_Sobel);
 	return 0;
 }
