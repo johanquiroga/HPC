@@ -82,7 +82,8 @@ int main(int argc, char** argv) {
 	int width, height, sizeImageGrey, sizeImage;
 	Mat image, image_out_cuda, image_gray_opencv, image_gray_host, image_out_host, image_out_opencv_gpu, image_out_opencv, abs_image_out_opencv;
 	unsigned char *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut, *image_sobel, *d_image_Sobel, *cv_gray_image;
-	Size imageSize; 
+	Size imageSize;
+	gpu::GpuMat src, dst, gray;
 
 	//printf("Image name: %s\n", image_name);
 	image = imread(image_name, 1);
@@ -139,20 +140,32 @@ int main(int argc, char** argv) {
 	image_out_host.data = image_sobel;
 	imwrite("image_out_host.jpg", image_out_host);
 	time_used_host = ((double) (end_host - start_host)) /CLOCKS_PER_SEC;
-	//printf("Tiempo algoritmo OpenCV: %.10f\n", time_used_opencv);
 	printf("%.10f,", time_used_host);
 
 	// Start conversion with OpenCV
 	start_opencv = clock();
 	cvtColor(image, image_gray_opencv, CV_BGR2GRAY);
-	Sobel(image_gray_opencv, image_out_opencv, CV_8UC1, 1, 0, 3);
-	convertScaleAbs(image_out_opencv, abs_image_out_opencv);
+	Sobel(image_gray_opencv, image_out_opencv, CV_8UC1, 1, 0, 3); //src, dst, format(color depth), gradientx, gradienty, M size
+	convertScaleAbs(image_out_opencv, abs_image_out_opencv); //src, dst -> convert to 8 bit, normalize
 	end_opencv = clock();
 	imwrite("image_out_opencv.jpg", abs_image_out_opencv);
 	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
 	printf("%.10f,", time_used_opencv);
 	printf("%.10f,", time_used_host/time_used_opencv);
 	//End OpenCV conversion
+
+	// Start conversion with OpenCVCuda
+	start_opencv_gpu = clock();
+	src.upload(image);
+	gpu::cvtColor(src, gray, CV_BGR2GRAY);
+	gpu::Sobel(gray, dst, CV_8UC1, 1, 0, 3);
+	dst.download(image_out_opencv_gpu);
+	end_opencv_gpu = clock();
+	imwrite("image_out_opencv_gpu.jpg", image_out_opencv_gpu);
+	time_used_opencv_gpu = ((double) (end_opencv_gpu - start_opencv_gpu)) /CLOCKS_PER_SEC;
+	printf("%.10f,", time_used_opencv_gpu);
+	printf("%.10f,", time_used_opencv/time_used_opencv_gpu);
+	// End OpenCVCuda conversion
 
 	// Start conversion with cuda	
 	start_cuda = clock();
@@ -191,11 +204,13 @@ int main(int argc, char** argv) {
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
 	printf("%.10f\n", time_used_opencv/time_used_cuda);
+	printf("%.10f\n", time_used_opencv_gpu/time_used_cuda);
 		
 	//printf("Done\n\n");
 	//showImage(image, "Image In");
 	showImage(image_out_host, "Image out Host");
 	showImage(abs_image_out_opencv, "Image out OpenCV");
+	showImage(image_out_opencv_gpu, "Image out OpenCVCuda");
 	showImage(image_out_cuda, "Image out CUDA");
 	waitKey(0);
 	free(h_ImageOut); free(image_sobel); cudaFree(d_ImageData); cudaFree(d_ImageOut); cudaFree(d_image_Sobel);
