@@ -20,5 +20,6 @@ do
 		echo -n "$run|"
 		srun image_convolution ../OpenCV/test_files/img$i.jpg
 	done
+	echo "Promedios:| | | | | | | | "
 	echo
 done
