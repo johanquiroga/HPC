@@ -2,134 +2,74 @@
 
 iteracion|Host|OpenCV|aceleracion Host-OCV|OpenCVGPU|aceleracion OCV-OCVGPU|Cuda|aceleracion OCV-Cuda|aceleracion OCVGPU-Cuda
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-1|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-2|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-3|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-4|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-5|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-6|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-7|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-8|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-9|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-10|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-11|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-12|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-13|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-14|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-15|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-16|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-17|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-18|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-19|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-20|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
+1|0.1635820000|0.1074610000|1.5222452797|0.0035510000|30.2621796677|0.0086560000|12.4146256932|0.4102356747
+2|0.1804540000|0.0658700000|2.7395475937|0.0033540000|19.6392367323|0.0040580000|16.2321340562|0.8265155249
+3|0.1619930000|0.0660290000|2.4533614018|0.0033890000|19.4833284155|0.0039950000|16.5279098874|0.8483103880
+4|0.2059960000|0.0670040000|3.0743836189|0.0032030000|20.9191383078|0.0039960000|16.7677677678|0.8015515516
+5|0.1826000000|0.0651470000|2.8028919213|0.0035700000|18.2484593838|0.0040120000|16.2380358923|0.8898305085
+6|0.1644100000|0.0678490000|2.4231749915|0.0100470000|6.7531601473|0.0086310000|7.8610821458|1.1640597845
+7|0.2056630000|0.0667060000|3.0831259557|0.0031720000|21.0296343001|0.0039840000|16.7434738956|0.7961847390
+8|0.1657430000|0.0686310000|2.4149873964|0.0100340000|6.8398445286|0.0084770000|8.0961425032|1.1836734694
+9|0.1923590000|0.0904580000|2.1265006965|0.0035050000|25.8082738944|0.0040150000|22.5300124533|0.8729763387
+10|0.1675180000|0.0651920000|2.5696097681|0.0100520000|6.4854755273|0.0085940000|7.5857575052|1.1696532465
+11|0.1928700000|0.1100800000|1.7520893895|0.0099680000|11.0433386838|0.0085960000|12.8059562587|1.1596091205
+12|0.2006710000|0.0671070000|2.9903139762|0.0033860000|19.8189604253|0.0039880000|16.8272316951|0.8490471414
+13|0.1750470000|0.0669560000|2.6143586833|0.0034330000|19.5036411302|0.0039920000|16.7725450902|0.8599699399
+14|0.1931900000|0.1032420000|1.8712345751|0.0033950000|30.4100147275|0.0040010000|25.8040489878|0.8485378655
+15|0.1613990000|0.0660610000|2.4431813021|0.0035160000|18.7886803185|0.0039810000|16.5940718412|0.8831951771
+16|0.1912490000|0.1153500000|1.6579887300|0.0034340000|33.5905649388|0.0039630000|29.1067373202|0.8665152662
+17|0.1930670000|0.0658260000|2.9329900039|0.0034180000|19.2586307782|0.0040310000|16.3299429422|0.8479285537
+18|0.1807600000|0.1102170000|1.6400373808|0.0034150000|32.2743777452|0.0040000000|27.5542500000|0.8537500000
+19|0.2023560000|0.0670950000|3.0159624413|0.0083680000|8.0180449331|0.0040290000|16.6530156366|2.0769421693
+20|0.1632040000|0.0676700000|2.4117629673|0.0036590000|18.4941240776|0.0041590000|16.2707381582|0.8797787930
 
 **Image**: img2.jpg
 
 iteracion|Host|OpenCV|aceleracion Host-OCV|OpenCVGPU|aceleracion OCV-OCVGPU|Cuda|aceleracion OCV-Cuda|aceleracion OCVGPU-Cuda
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-1|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-2|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-3|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-4|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-5|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-6|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-7|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-8|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-9|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-10|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-11|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-12|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-13|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-14|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-15|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-16|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-17|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-18|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-19|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-20|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
+1|0.1499450000|0.1080840000|1.3873006180|0.0108540000|9.9579878386|0.0075490000|14.3176579679|1.4378063320
+2|0.1600150000|0.0623760000|2.5653296140|0.0030910000|20.1798770624|0.0077090000|8.0913218316|0.4009599170
+3|0.1808060000|0.0640560000|2.8226239540|0.0031040000|20.6365979381|0.0036000000|17.7933333333|0.8622222222
+4|0.1723480000|0.1058950000|1.6275367109|0.0030910000|34.2591394371|0.0036380000|29.1080263881|0.8496426608
+5|0.1537250000|0.1085420000|1.4162720422|0.0031730000|34.2080050425|0.0035940000|30.2008903728|0.8828603228
+6|0.1501650000|0.0626050000|2.3986103346|0.0031420000|19.9252068746|0.0039080000|16.0197031730|0.8039918117
+7|0.1618680000|0.0630830000|2.5659527924|0.0031300000|20.1543130990|0.0075400000|8.3664456233|0.4151193634
+8|0.1777110000|0.1081380000|1.6433723575|0.0065410000|16.5323345054|0.0036220000|29.8558807289|1.8059083379
+9|0.1523650000|0.0628540000|2.4241098419|0.0091320000|6.8828296102|0.0036150000|17.3869986169|2.5261410788
+10|0.1772240000|0.1100830000|1.6099125206|0.0091820000|11.9890002178|0.0075810000|14.5209075320|1.2111858594
+11|0.1909810000|0.0643150000|2.9694628003|0.0031820000|20.2121307354|0.0036040000|17.8454495006|0.8829078801
+12|0.1699900000|0.0641500000|2.6498830865|0.0091410000|7.0178317471|0.0076100000|8.4296977661|1.2011826544
+13|0.1564080000|0.0635130000|2.4626139530|0.0092310000|6.8804029899|0.0076110000|8.3448955459|1.2128498226
+14|0.1696930000|0.1048110000|1.6190380781|0.0091140000|11.5000000000|0.0076120000|13.7691802417|1.1973200210
+15|0.1556110000|0.0631960000|2.4623552124|0.0031440000|20.1005089059|0.0035970000|17.5690853489|0.8740617181
+16|0.1793220000|0.0626150000|2.8638824563|0.0030870000|20.2834467120|0.0076040000|8.2344818517|0.4059705418
+17|0.1631300000|0.0633800000|2.5738403282|0.0031300000|20.2492012780|0.0036030000|17.5908964752|0.8687205107
+18|0.1661770000|0.0626590000|2.6520850955|0.0031030000|20.1930389945|0.0035790000|17.5074043029|0.8670019559
+19|0.1742620000|0.1060170000|1.6437175170|0.0034610000|30.6318982953|0.0035970000|29.4737281068|0.9621907145
+20|0.1709830000|0.0675730000|2.5303449603|0.0034170000|19.7755340942|0.0077320000|8.7393947232|0.4419296430
 
 **Image**: img3.jpg
 
 iteracion|Host|OpenCV|aceleracion Host-OCV|OpenCVGPU|aceleracion OCV-OCVGPU|Cuda|aceleracion OCV-Cuda|aceleracion OCVGPU-Cuda
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
-1|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-2|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-3|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-4|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-5|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-6|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-7|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-8|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-9|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-10|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-11|srun: error: node01: task 0: Exited with exit code 2
-slurmstepd: execve(): image_convolution: No such file or directory
-12|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-13|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-14|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-15|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-16|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-17|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-18|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-19|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
-20|slurmstepd: execve(): image_convolution: No such file or directory
-srun: error: node01: task 0: Exited with exit code 2
+1|0.1787870000|0.1133940000|1.5766883609|0.0035100000|32.3059829060|0.0040030000|28.3272545591|0.8768423682
+2|0.1593330000|0.0892580000|1.7850836900|0.0033610000|26.5569770902|0.0040340000|22.1264253842|0.8331680714
+3|0.1627850000|0.1108470000|1.4685557570|0.0034370000|32.2510910678|0.0039710000|27.9141274238|0.8655250567
+4|0.1867880000|0.1161850000|1.6076774110|0.0034220000|33.9523670368|0.0040050000|29.0099875156|0.8544319600
+5|0.2053530000|0.0647960000|3.1692234089|0.0100880000|6.4230769231|0.0087210000|7.4298818943|1.1567480793
+6|0.1786640000|0.0635450000|2.8116138170|0.0034820000|18.2495692131|0.0039810000|15.9620698317|0.8746546094
+7|0.1631980000|0.1066920000|1.5296179657|0.0064020000|16.6654170572|0.0085280000|12.5107879925|0.7507035647
+8|0.1789430000|0.0645320000|2.7729343581|0.0033760000|19.1149289100|0.0084410000|7.6450657505|0.3999526122
+9|0.1706680000|0.0629670000|2.7104356250|0.0034160000|18.4329625293|0.0039920000|15.7732965932|0.8557114228
+10|0.1641030000|0.1105320000|1.4846650744|0.0033670000|32.8280368280|0.0040010000|27.6260934766|0.8415396151
+11|0.1596480000|0.0690840000|2.3109258294|0.0102530000|6.7379303618|0.0043680000|15.8159340659|2.3472985348
+12|0.1895580000|0.0643580000|2.9453680972|0.0099920000|6.4409527622|0.0040620000|15.8439192516|2.4598719842
+13|0.1692200000|0.0920500000|1.8383487235|0.0032090000|28.6849485821|0.0039910000|23.0643948885|0.8040591330
+14|0.2075360000|0.0639610000|3.2447272557|0.0034190000|18.7075168178|0.0043290000|14.7750057750|0.7897897898
+15|0.1934780000|0.0640290000|3.0217245311|0.0101750000|6.2927764128|0.0040410000|15.8448403860|2.5179411037
+16|0.1731670000|0.0649120000|2.6677193739|0.0032190000|20.1652687170|0.0040290000|16.1111938446|0.7989575577
+17|0.1694870000|0.1075710000|1.5755826384|0.0035300000|30.4733711048|0.0040100000|26.8256857855|0.8802992519
+18|0.1712160000|0.0638700000|2.6806951620|0.0034170000|18.6918349429|0.0040460000|15.7859614434|0.8445378151
+19|0.1893410000|0.0636840000|2.9731329690|0.0033650000|18.9254086181|0.0086380000|7.3725399398|0.3895577680
+20|0.1811450000|0.0634970000|2.8528119439|0.0033790000|18.7916543356|0.0039780000|15.9620412267|0.8494218200
 
