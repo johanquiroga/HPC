@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
 	image_out_host.data = image_sobel;
 	imwrite("image_out_host.jpg", image_out_host);
 	time_used_host = ((double) (end_host - start_host)) /CLOCKS_PER_SEC;
-	printf("%.10f,", time_used_host);
+	printf("%.10f|", time_used_host);
 
 	// Start conversion with OpenCV
 	start_opencv = clock();
@@ -159,8 +159,8 @@ int main(int argc, char** argv) {
 	end_opencv = clock();
 	imwrite("image_out_opencv.jpg", abs_image_out_opencv);
 	time_used_opencv = ((double) (end_opencv - start_opencv)) /CLOCKS_PER_SEC;
-	printf("%.10f,", time_used_opencv);
-	printf("%.10f,", time_used_host/time_used_opencv);
+	printf("%.10f|", time_used_opencv);
+	printf("%.10f|", time_used_host/time_used_opencv);
 	//End OpenCV conversion
 
 	// Start conversion with OpenCVCuda
@@ -173,8 +173,8 @@ int main(int argc, char** argv) {
 	end_opencv_gpu = clock();
 	imwrite("image_out_opencv_gpu.jpg", image_out_opencv_gpu);
 	time_used_opencv_gpu = ((double) (end_opencv_gpu - start_opencv_gpu)) /CLOCKS_PER_SEC;
-	printf("%.10f,", time_used_opencv_gpu);
-	printf("%.10f,", time_used_opencv/time_used_opencv_gpu);
+	printf("%.10f|", time_used_opencv_gpu);
+	printf("%.10f|", time_used_opencv/time_used_opencv_gpu);
 	// End OpenCVCuda conversion
 
 	// Start conversion with cuda	
@@ -207,13 +207,13 @@ int main(int argc, char** argv) {
 	// End CUDA conversion
 	time_used_cuda = ((double) (end_cuda - start_cuda)) /CLOCKS_PER_SEC;
 	//printf("Tiempo algoritmo en CUDA: %.10f\n", time_used_cuda);
-	printf("%.10f,", time_used_cuda);
+	printf("%.10f|", time_used_cuda);
 
 	image_out_cuda.create(height, width, CV_8UC1);
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
-	printf("%.10f,", time_used_opencv/time_used_cuda);
+	printf("%.10f|", time_used_opencv/time_used_cuda);
 	printf("%.10f\n", time_used_opencv_gpu/time_used_cuda);
 		
 	//printf("Done\n\n");
