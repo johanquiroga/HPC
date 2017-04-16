@@ -10,6 +10,7 @@ En el presente informe se busca presentar la implementación del operador Sobel 
 
 Aunque este operador se pueda aplicar en cualquier dirección de la imagen, para este proyecto se implementó unicamente la máscara vertical (ver [Figura 1][fig1]), por lo tanto se destacarán unicamente los bordes verticales.
 
+| | | |
 |:---:|:---:|:---:|
 |-1   |0    |1    |
 |-2   |0    |2    |
