@@ -163,18 +163,44 @@ Sin embargo, aquí se utiliza una implementación propia para convertir imagenes
 ![Imagen de salida cuda](imgs/image_out_cuda.jpg)  
 #### *Imagen 5: Imagen de salida de implementación con Cuda*
 
-#### TODO: Memory bandwidth y throughput
+#### Memory Bandwidth y Throughput
+Para el cálculo del ancho de banda efectivo, se hizo lo siguiente:
+
+![Figura 2][fig2]
+#### *Figura 2: Ecuación de ancho de banda efectivo*
+
+Entonces, para la imagen de entrada se tiene que:
+* *sizeImage* = *sizeof(unsigned char)* * width * height * channels = 1 * 2560 * 1600 * 3 = 12288000
+* *sizeImageGrey* = *sizeof(unsigned char)* * width * height = 1 * 2560 * 1600 = 4096000
+* *sizeM* = *sizeof(char)* * 9 = 1 * 9 = 9
+* *t* = tiempo promedio de ejecución de implementación de cuda obtenido = 0.0058559500
+
+Por lo que:
+* MB = 2.8 GB/s
+
+Para el calculo del *throughput* se utilizó la siguiente ecuación.
+
+![Figura 3][fig3]
+#### *Figura 3: Ecuación de throughput*
+
+* kernel rgb2gray:
+  * *nFLOPS* = 5
+  * *size* = *sizeImage* = 12288000
+  * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 498,524*10^-6
+  * se tiene entonces: **123.24 GFLOP/s**
+* kernel d_sobelFilter.
+  * (2*4096000)/(1,225*10^-3*10^9)
 
 ## III.  Resultados
-Para obtener resultados de desempeño se ejecuto el programa con 3 imagenes diferentes, 20 veces cada una y se obtuvieron los tiempos de cada ejecución (ver [Figura 2][fig2]).
+Para obtener resultados de desempeño se ejecuto el programa con 3 imagenes diferentes, 20 veces cada una y se obtuvieron los tiempos de cada ejecución (ver [Figura 4][fig4]).
 
 ![Tiempos de ejecución obtenidos](imgs/Tiempos_ejecucion.png)  
-#### *Figura 2: Tiempos de ejecución*
+#### *Figura 4: Tiempos de ejecución*
 
-Con estos tiempos se calcularon las aceleraciones que se obtenian de una implementación con respecto a otra (ver [Figura 3][fig3]).
+Con estos tiempos se calcularon las aceleraciones que se obtenian de una implementación con respecto a otra (ver [Figura 5][fig5]).
 
 ![Aceleraciones obtenidas](imgs/Aceleraciones.png)  
-#### *Figura 3: Aceleraciones obtenidas*
+#### *Figura 5: Aceleraciones obtenidas*
 
 Como era de esperarse, las implementaciones que se basan en uso de GPU obtuvieron tiempos mucho mejores que aquellas que son secuenciales. Además, el rendimiento obtenido con estas implementaciones siempre es muy similar, aunque la aceleracion obtenida de la implementación propia utilizando CUDA contra la que uiliza el módulo GPU de OpenCV permite asegurar que la primera es un poco más rapida que la segunda.
 
@@ -186,5 +212,7 @@ Aunque la implementación con CUDA sea la que mejores tiempos obtiene, se puede 
 
 
 [fig1]: #figura-1-máscara-vertical-del-operador-sobel
-[fig2]: #figura-2-tiempos-de-ejecución
-[fig3]: #figura-3-aceleraciones-obtenidas
+[fig2]: imgs/ecuacion1.jpg
+[fig3]: imgs/ecuacion2.jpg
+[fig4]: #figura-4-tiempos-de-ejecución
+[fig5]: #figura-5-aceleraciones-obtenidas
