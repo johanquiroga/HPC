@@ -2,7 +2,7 @@
 
 ## I.  Introducción
 
-El operador Sobel es una máscara que calcula el gradiente de la intensidad de cada punto en una imagen; esto da como resultado qué tan abrupto es el cambio en la imagen en cada punto identificando posibles bordes en la misma. Por esto, este operador es comunmente usado en el procesamiento de imagenes para la detección de bordes. 
+El operador Sobel es una máscara que calcula el gradiente de la intensidad de cada punto en una imagen; esto da como resultado qué tan abrupto es el cambio en la imagen en cada punto identificando posibles bordes en la misma. Por esto, este operador es comúnmente usado en el procesamiento de imágenes para la detección de bordes. 
 
 En el presente informe se busca presentar la implementación del operador Sobel en C utilizando diferentes librerias, al igual que una implementación propia en C. Las librerias que se utilizarán son: OpenCV, el módulo de GPU de OpenCV y Cuda para una paralelización de la implementación propia utilizando GPU.
 
@@ -190,7 +190,7 @@ Para el cálculo del *throughput* se utilizó la siguiente ecuación.
   * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 498,524*10^-6 s
   * se tiene entonces: **123.24 GFLOP/s**
   * 2.4% de su capacidad total
-* kernel d_sobelFilter.
+* kernel d_sobelFilter:
   * *nFLOPS* = 2
   * *size* = *sizeImageGrey* = 4096000
   * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 1,225*10^-3 s
@@ -212,7 +212,7 @@ Como era de esperarse, las implementaciones que se basan en uso de GPU obtuviero
 
 ## IV.  Conclusiones
 
-Se puede evidenciar que el uso de GPU para procesamiento de imagenes es una muy buena practica ya que la mayoría de los algoritmos usados en este campo son altamente paralelizables y resultan en posibles mejoras de hasta 20X en tiempos de ejecución.
+Se puede evidenciar que el uso de GPU para procesamiento de imágenes es una muy buena práctica ya que la mayoría de los algoritmos usados en este campo son altamente paralelizables y resultan en posibles mejoras de hasta 20X en tiempos de ejecución.
 
 Aunque la implementación con CUDA sea la que mejores tiempos obtiene, se puede seguir mejorando al aplicar los conceptos de uso de Memoria Compartida e incluso el uso de memoria constante, para realizar una paralelización aún más óptima.
 
