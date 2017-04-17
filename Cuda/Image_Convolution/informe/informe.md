@@ -177,8 +177,9 @@ Entonces, para la imagen de entrada se tiene que:
 
 Por lo que:
 * MB = 2.8 GB/s
+* 1.25% del ancho de banda teórico
 
-Para el calculo del *throughput* se utilizó la siguiente ecuación.
+Para el cálculo del *throughput* se utilizó la siguiente ecuación.
 
 ![Figura 3][fig3]
 #### *Figura 3: Ecuación de throughput*
@@ -186,10 +187,15 @@ Para el calculo del *throughput* se utilizó la siguiente ecuación.
 * kernel rgb2gray:
   * *nFLOPS* = 5
   * *size* = *sizeImage* = 12288000
-  * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 498,524*10^-6
+  * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 498,524*10^-6 s
   * se tiene entonces: **123.24 GFLOP/s**
+  * 2.4% de su capacidad total
 * kernel d_sobelFilter.
-  * (2*4096000)/(1,225*10^-3*10^9)
+  * *nFLOPS* = 2
+  * *size* = *sizeImageGrey* = 4096000
+  * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 1,225*10^-3 s
+  * se tiene entonces: **6.69 GFLOP/s**
+  * 0.13% de su capacidad total
 
 ## III.  Resultados
 Para obtener resultados de desempeño se ejecuto el programa con 3 imagenes diferentes, 20 veces cada una y se obtuvieron los tiempos de cada ejecución (ver [Figura 4][fig4]).
