@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
 	height = imageSize.height;
 	sizeImage = sizeof(unsigned char)*width*height*image.channels();
 	sizeImageGrey = sizeof(unsigned char)*width*height;
+	printf("Width: %d, Height: %d, sizeof(unsigned char): %d, sizeImage: %d, sizeImageGrey: %d, sizeM: %d\n", width, height, sizeof(unsigned char), sizeImage, sizeImageGrey, sizeof(char)*9);
 	
 	cv_gray_image = (unsigned char *) malloc (sizeImageGrey);
 	h_ImageData = (unsigned char *) malloc (sizeImage);
