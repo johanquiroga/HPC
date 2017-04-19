@@ -18,7 +18,7 @@ Aunque este operador se pueda aplicar en cualquier dirección de la imagen, para
 #### *Figura 1: Máscara vertical del operador Sobel*
 
 Se realizaron varias implementaciones de este operador: implementación propia, usando la función disponible con OpenCV, usando la misma función pero en el módulo de GPU de la misma librería y utilizando Cuda para una implementación paralela en GPU.
-Para todas la implementaciones se realizan los siguientes pasos:
+Para todas las implementaciones se realizan los siguientes pasos:
 
 1. Se cargan los datos de la imagen de entrada.
 2. Se convierte la imagen a escala de grises.
