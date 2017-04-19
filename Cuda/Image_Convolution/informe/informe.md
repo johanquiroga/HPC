@@ -186,16 +186,16 @@ Para el cálculo del *throughput* se utilizó la siguiente ecuación.
 
 * kernel rgb2gray:
   * *nFLOPS* = 5
-  * *size* = *sizeImage* = 12288000
+  * *size* = *sizeImageGrey* = 4096000
   * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 498,524*10^-6 s
-  * se tiene entonces: **123.24 GFLOP/s**
-  * 2.4% de su capacidad total
+  * se tiene entonces: **41.08 GFLOP/s**
+  * 0.79% de su capacidad total
 * kernel d_sobelFilter:
-  * *nFLOPS* = 2
+  * *nFLOPS* = 18
   * *size* = *sizeImageGrey* = 4096000
   * *t* = tiempo que se demora el kernel en ejecutarse, según la herramienta nvvp = 1,225*10^-3 s
-  * se tiene entonces: **6.69 GFLOP/s**
-  * 0.13% de su capacidad total
+  * se tiene entonces: **60.19 GFLOP/s**
+  * 1.16% de su capacidad total
 
 ## III.  Resultados
 Para obtener resultados de desempeño se ejecuto el programa con 3 imagenes diferentes, 20 veces cada una y se obtuvieron los tiempos de cada ejecución (ver [Figura 4][fig4]).
