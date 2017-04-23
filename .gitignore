@@ -6,6 +6,7 @@ cuda_vector_add
 grey_scale
 vector_add
 image_convolution
+image_convolution_cached
 */*/build
 */*/*/build
 rgb2gray
