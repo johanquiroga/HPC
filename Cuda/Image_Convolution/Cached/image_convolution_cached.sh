@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1
 
 #echo $CUDA_VISIBLE_DEVICES
-for i in {1..3}
+for i in {1..4}
 do
 	echo "**Image**: img$i.jpg"
 	echo
