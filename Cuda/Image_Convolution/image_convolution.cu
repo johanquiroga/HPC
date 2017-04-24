@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
 	
 	int blockSize = 32;
 	dim3 dimBlock(blockSize, blockSize, 1);
-	dim3 dimGrid(ceil(width/float(blockSize)), ceil(width/float(blockSize)), 1);
+	dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
 	rgb2gray<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height);
 	cudaDeviceSynchronize();
 	d_sobelFilter<<<dimGrid, dimBlock>>>(d_ImageOut, d_image_Sobel, width, height, 3, d_M);
