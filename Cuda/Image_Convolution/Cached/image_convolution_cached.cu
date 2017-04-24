@@ -40,20 +40,61 @@ __global__ void d_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, i
 }
 
 __global__ void shared_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, int width, int height) {
-	__shared__ unsigned char s_imageIn[TILE_WIDTH + MASK_WIDTH - 1][TILE_WIDTH + MASK_WIDTH -1];
-	int n = MASK_WIDTH/2; //Margin	
+	int sizeShared = TILE_WIDTH + MASK_WIDTH - 1;
+	__shared__ unsigned char s_imageIn[sizeShared][sizeShared];
+
+	int n = MASK_WIDTH/2; //Margin
+
 	int bx = blockIdx.x;int by = blockIdx.y;
 	int tx = threadIdx.x;int ty = threadIdx.y;
 
+	int sharedIdx = ty*TILE_WIDTH+tx;
+	int sharedIdx_Y = sharedIdx / (sizeShared);
+	int sharedIdx_X = sharedIdx % (sizeShared);
+    int srcY = by * TILE_WIDTH + sharedIdx_Y - n;
+	int srcX = bx * TILE_WIDTH + sharedIdx_X - n;
+    int srcIdx = srcY * width + srcX;
+
+    if(srcY >= 0 && srcY < height && srcX >= 0 && srcX < width) {
+    	s_imageIn[sharedIdx_Y][sharedIdx_X] = imageIn[srcIdx];
+    } else {
+    	s_imageIn[sharedIdx_Y][sharedIdx_X] = 0;
+    }
+
+    sharedIdx = ty * TILE_WIDTH + tx + TILE_WIDTH * TILE_WIDTH;
+    sharedIdx_Y = sharedIdx / (sizeShared);
+	sharedIdx_X = sharedIdx % (sizeShared);
+	srcY = by * TILE_WIDTH + sharedIdx_Y - n;
+	srcX = bx * TILE_WIDTH + sharedIdx_X - n;
+	srcIdx = srcY * width + srcX;
+
+	if (sharedIdx_Y < sizeShared) {
+		if(srcY >= 0 && srcY < height && srcX >= 0 && srcX < width) {
+	    	s_imageIn[sharedIdx_Y][sharedIdx_X] = imageIn[srcIdx];
+	    } else {
+	    	s_imageIn[sharedIdx_Y][sharedIdx_X] = 0;
+	    }
+	}
+	__syncthreads();
+
+	int res = 0;
+	for(int i=0; i<maskWidth; i++) {
+		for(int j=0; j<maskWidth; j++) {
+			res += s_imageIn[ty + i][tx + j] * M[i*maskWidth + j];
+		}
+	}
+
 	int Row = by * TILE_WIDTH + ty;
 	int Col = bx * TILE_WIDTH + tx;
-
-	int dest = threadIdx.y*TILE_SIZE+threadIdx.x;
-	int destY = dest / (TILE_SIZE+MASK_WIDTH-1);
-	int destX = dest % (TILE_SIZE+MASK_WIDTH-1);
-        int srcY = blockIdx.y * TILE_SIZE + destY - n;
-	int srcX = blockIdx.x * TILE_SIZE + destX - n;
-        int src = (srcY * width + srcX);
+	if(res < 0)
+		res = 0;
+	else
+		if(res > 255)
+			res = 255;
+	if(Row < height && Col < width) {
+		imageOut[Row*width+Col] = (unsigned char)res;
+	}
+	__syncthreads;
 }
 
 __global__ void rgb2gray(unsigned char* d_Pin, unsigned char* d_Pout, int width, int height) {
@@ -215,10 +256,10 @@ int main(int argc, char** argv) {
 	
 	int blockSize = 32;
 	dim3 dimBlock(blockSize, blockSize, 1);
-	dim3 dimGrid(ceil(width/float(blockSize)), ceil(width/float(blockSize)), 1);
+	dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
 	rgb2gray<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height);
 	cudaDeviceSynchronize();
-	d_sobelFilter<<<dimGrid, dimBlock>>>(d_ImageOut, d_image_Sobel, width, height, 3);
+	shared_sobelFilter<<<dimGrid, dimBlock>>>(d_ImageOut, d_image_Sobel, width, height);
 	cudaDeviceSynchronize();
 		
 	err = cudaMemcpy(h_ImageOut, d_image_Sobel, sizeImageGrey, cudaMemcpyDeviceToHost);
