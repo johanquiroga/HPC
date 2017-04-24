@@ -40,7 +40,7 @@ __global__ void d_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, i
 }
 
 __global__ void shared_sobelFilter(unsigned char* imageIn, unsigned char* imageOut, int width, int height) {
-	int sizeShared = TILE_WIDTH + MASK_WIDTH - 1;
+	const int sizeShared = TILE_WIDTH + MASK_WIDTH - 1;
 	__shared__ unsigned char s_imageIn[sizeShared][sizeShared];
 
 	int n = MASK_WIDTH/2; //Margin
@@ -78,9 +78,9 @@ __global__ void shared_sobelFilter(unsigned char* imageIn, unsigned char* imageO
 	__syncthreads();
 
 	int res = 0;
-	for(int i=0; i<maskWidth; i++) {
-		for(int j=0; j<maskWidth; j++) {
-			res += s_imageIn[ty + i][tx + j] * M[i*maskWidth + j];
+	for(int i=0; i<MASK_WIDTH; i++) {
+		for(int j=0; j<MASK_WIDTH; j++) {
+			res += s_imageIn[ty + i][tx + j] * M[i*MASK_WIDTH + j];
 		}
 	}
 
@@ -94,7 +94,7 @@ __global__ void shared_sobelFilter(unsigned char* imageIn, unsigned char* imageO
 	if(Row < height && Col < width) {
 		imageOut[Row*width+Col] = (unsigned char)res;
 	}
-	__syncthreads;
+	__syncthreads();
 }
 
 __global__ void rgb2gray(unsigned char* d_Pin, unsigned char* d_Pout, int width, int height) {
