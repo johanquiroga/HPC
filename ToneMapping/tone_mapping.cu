@@ -10,14 +10,17 @@
 
 using namespace cv;
 
-__global__ void under_exposed(unsigned char* imageIn, unsigned char* imageOut, int width, int height) {
+__global__ void under_exposed(unsigned char* imageIn, unsigned char* imageOut, int width, int height, int channels) {
 	int Row = blockIdx.y*blockDim.y + threadIdx.y;
 	int Col = blockIdx.x*blockDim.x + threadIdx.x;
 	
 	if((Row < height) && (Col < width)) {
-		imageOut[(Row*width+Col)*3+BLUE] = imageIn[(Row*width+Col)*3+BLUE] - 0.2;
-		imageOut[(Row*width+Col)*3+GREEN] = imageIn[(Row*width+Col)*3+GREEN] - 0.2;
-		imageOut[(Row*width+Col)*3+RED] = imageIn[(Row*width+Col)*3+RED] - 0.2;
+		for(int i=0; i<channels; i++) {
+			imageOut[Row*width+Col*channels+i] = (int)(imageIn[Row*width+Col*channels+i] * 0.2);
+		}
+		// imageOut[(Row*width+Col)*3+BLUE] = (int)imageIn[(Row*width+Col)*3+BLUE] - 0.2;
+		// imageOut[(Row*width+Col)*3+GREEN] = (int)imageIn[(Row*width+Col)*3+GREEN] - 0.2;
+		// imageOut[(Row*width+Col)*3+RED] = (int)imageIn[(Row*width+Col)*3+RED] - 0.2;
 	}
 }
 
@@ -41,7 +44,7 @@ int main(int argc, char** argv) {
 	Size imageSize; 
 
 	//printf("Image name: %s\n", image_name);
-	image = imread(image_name, 1);
+	image = imread(image_name, 0);
 	if(argc !=2 || !image.data){
 	        printf("No image Data \n");
         	return -1;
@@ -82,7 +85,7 @@ int main(int argc, char** argv) {
 	int blockSize = 32;
 	dim3 dimBlock(blockSize, blockSize, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
-	under_exposed<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height);
+	under_exposed<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, image.channels());
 		
 	err = cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost);
 	if(err != cudaSuccess){
