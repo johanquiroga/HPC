@@ -94,8 +94,8 @@ int main(int argc, char** argv) {
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 
 	//printf("Done\n\n");
-	//showImage(image, "Image In");
-	//showImage(image_out_cuda, "Image out CUDA");
+	showImage(image, "Image In");
+	showImage(image_out_cuda, "Image out CUDA");
 	//showImage(image_out_opencv, "Image out OpenCV");
 	//waitKey(0);
 	free(h_ImageOut); cudaFree(d_ImageData); cudaFree(d_ImageOut);
