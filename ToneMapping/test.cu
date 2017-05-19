@@ -9,6 +9,11 @@
 
 using namespace cv;
 
+__device__ void compute_intensity(float Red, float Green, float Blue)
+{
+
+}
+
 void showImage(Mat &image, const char *window) {
 	namedWindow(window, CV_WINDOW_NORMAL);
 	imshow(window, image);
@@ -44,6 +49,7 @@ int main(int argc, char** argv)
 	height = imageSize.height;
 
 	printf("Width: %d\nHeight: %d\n", width, height);
+	printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
 	return 0;
 }
