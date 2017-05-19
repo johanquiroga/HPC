@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 //	std::vector<Mat>images;
 
 	printf("%s\n", image_name);
-	hdr = imread(image_name, CV_LOAD_IMAGE_ANYDEPTH);
+	hdr = imread(image_name, -1);
 	if(argc !=2 || !hdr.data){
 	        printf("No image Data \n");
       	return -1;
@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 	height = imageSize.height;
 
 	//printf("Width: %d\nHeight: %d\n", width, height);
-	std::string ty =  type2str( M.type() );
-	printf("Matrix: %s %dx%d \n", ty.c_str(), M.cols, M.rows );
+	std::string ty =  type2str( hdr.type() );
+	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
 
 	//printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
