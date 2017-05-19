@@ -56,7 +56,7 @@ __device__ float compute_chrominance(float Channel, float I)
 /***********
 L = log2(I)
 ***********/
-__device__ void compute_intensity_log(float I)
+__device__ float compute_intensity_log(float I)
 {
 	return log2f(I);
 }
@@ -64,7 +64,7 @@ __device__ void compute_intensity_log(float I)
 /*********
 B = bf(L)
 *********/
-__device__ void apply_billateral_filter(float L)
+__device__ float apply_billateral_filter(float L)
 {
 	//@TODO
 }
@@ -72,7 +72,7 @@ __device__ void apply_billateral_filter(float L)
 /*******
 D = L-B
 *******/
-__device__ void compute_detail_layer(float L, float B)
+__device__ float compute_detail_layer(float L, float B)
 {
 	return L-B;
 }
@@ -80,7 +80,7 @@ __device__ void compute_detail_layer(float L, float B)
 /********************
 nB = (B-offset)*scale
 ********************/
-__device__ void apply_offset_scale_base(float B, int offset, int scale)
+__device__ float apply_offset_scale_base(float B, int offset, int scale)
 {
 	return (B-offset)*scale;
 }
@@ -88,7 +88,7 @@ __device__ void apply_offset_scale_base(float B, int offset, int scale)
 /*************
 O = exp(nB+D)
 *************/
-__device__ void reconstruct_log_intensity(float nB, float D)
+__device__ float reconstruct_log_intensity(float nB, float D)
 {
 	return expf(nB+D);
 }
@@ -96,7 +96,7 @@ __device__ void reconstruct_log_intensity(float nB, float D)
 /****************************
 nR,nG,nB = O*(R/I, G/I, B/I)
 ****************************/
-__device__ void put_colors_back(float Channel, float I, float O)
+__device__ float put_colors_back(float Channel, float I, float O)
 {
 	return O*(compute_chrominance(Channel, I));
 }
