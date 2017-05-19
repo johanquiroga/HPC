@@ -6,6 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/photo.hpp>
 #include <vector>
+#include <string>
 
 using namespace cv;
 
@@ -17,6 +18,29 @@ __device__ void compute_intensity(float Red, float Green, float Blue)
 void showImage(Mat &image, const char *window) {
 	namedWindow(window, CV_WINDOW_NORMAL);
 	imshow(window, image);
+}
+
+std::string type2str(int type) {
+  std::string r;
+
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
 }
 
 int main(int argc, char** argv)
@@ -48,8 +72,11 @@ int main(int argc, char** argv)
 	width = imageSize.width;
 	height = imageSize.height;
 
-	printf("Width: %d\nHeight: %d\n", width, height);
-	printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
+	//printf("Width: %d\nHeight: %d\n", width, height);
+	std::string ty =  type2str( M.type() );
+	printf("Matrix: %s %dx%d \n", ty.c_str(), M.cols, M.rows );
+
+	//printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
 	return 0;
 }
