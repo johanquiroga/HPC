@@ -133,7 +133,6 @@ int main(int argc, char** argv) {
 	 	exit(-1);
 	}
 
-
 	image_out_under.create(height, width, CV_8UC1);
 	image_out_under.data = h_ImageOut_Under;
 	imwrite("image_out_under.jpg", image_out_under);
@@ -141,7 +140,6 @@ int main(int argc, char** argv) {
 	image_out_over.create(height, width, CV_8UC1);
 	image_out_over.data = h_ImageOut_Over;
 	imwrite("image_out_over.jpg", image_out_over);
-
 
 	//printf("Done\n\n");
 	//showImage(image, "Image In");
