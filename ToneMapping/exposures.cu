@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         	printf("Error copiando los datos de d_ImageOut a h_ImageOut\n");
 	 	exit(-1);
 	}
-	image_out_cuda.create(height, width, CV_8UC1);
+	image_out_cuda.create(height, width, CV_8UC3);
 	image_out_cuda.data = h_ImageOut;
 	imwrite("image_out_cuda.jpg", image_out_cuda);
 

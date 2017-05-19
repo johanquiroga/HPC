@@ -14,13 +14,13 @@ int main(int argc, char** argv)
 	char* image_name = argv[1];
 	Mat hdr;
 
-	image = imread(image_name, CV_LOAD_IMAGE_ANYDEPTH);
-	if(argc !=2 || !image.data){
+	hdr = imread(image_name, CV_LOAD_IMAGE_ANYDEPTH);
+	if(argc !=2 || !hdr.data){
 	        printf("No image Data \n");
         	return -1;
 	}
 
-	if(image.empty()) {
+	if(hdr.empty()) {
 		printf("Couldn't find or open the image...\n");
 		return -1;
 	}
