@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 
 	f_stop = atof(argv[2]);
 	gamma = atof(argv[3]);
-	show_flag = argv[4];
+	show_flag = bool(argv[4]);
 
 	if(hdr.empty()) {
 		printf("Couldn't find or open the image...\n");
@@ -198,8 +198,8 @@ int main(int argc, char** argv)
 
 	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;
-	ldr.converTo(ldr, CV_8UC3, 255);
-	imwrite("ldr.png", ldr*255);
+//	ldr.convertTo(ldr, CV_8UC3, 255);
+	imwrite("ldr.png", ldr);
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
