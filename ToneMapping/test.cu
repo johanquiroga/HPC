@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 	Size imageSize;
 	int width, height, channels, sizeImage;
 	float f_stop=0.0, gamma=0.0;
-	bool show_flag = false;
+	int show_flag;
 //	std::vector<Mat>images;
 
 	printf("%s\n", image_name);
@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 
 	f_stop = atof(argv[2]);
 	gamma = atof(argv[3]);
-	show_flag = bool(argv[4]);
+	show_flag = atoi(argv[4]);
 
 	if(hdr.empty()) {
 		printf("Couldn't find or open the image...\n");
@@ -196,10 +196,10 @@ int main(int argc, char** argv)
 
 	checkError(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
 
-	ldr.create(height, width, CV_32FC3);
+	ldr.create(height, width, CV_8UC3);
 	ldr.data = (unsigned char *)h_ImageOut;
 //	ldr.convertTo(ldr, CV_8UC3, 255);
-	imwrite("ldr.png", ldr);
+	imwrite("ldr.png", ldr*255);
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
