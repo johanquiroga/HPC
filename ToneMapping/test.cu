@@ -175,8 +175,8 @@ int main(int argc, char** argv)
 	sizeImage = sizeof(float)*width*height*channels;
 
 	//printf("Width: %d\nHeight: %d\n", width, height);
-	//std::string ty =  type2str( hdr.type() );
-	//printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
+	std::string ty =  type2str( hdr.type() );
+	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
 
 	//printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
@@ -196,10 +196,13 @@ int main(int argc, char** argv)
 
 	checkError(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
 
-	ldr.create(height, width, CV_8UC3);
+	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
 	imwrite("ldr.png", ldr);
+
+    std::string ty =  type2str( ldr.type() );
+    printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
