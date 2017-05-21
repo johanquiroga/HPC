@@ -144,6 +144,7 @@ __global__ void tonemap(float* imageIn, float* imageOut, int width, int height, 
 int main(int argc, char** argv)
 {
 	char* image_name = argv[1];
+    char* image_out_name = argv[5];
 	float *h_ImageData, *d_ImageData, *d_ImageOut, *h_ImageOut;
 	Mat hdr, ldr;
 	Size imageSize;
@@ -154,9 +155,9 @@ int main(int argc, char** argv)
 
 	printf("%s\n", image_name);
 	hdr = imread(image_name, -1);
-	if(argc !=5 || !hdr.data) {
+	if(argc !=6 || !hdr.data) {
 		printf("No image Data \n");
-		printf("Usage: ./test <file_path> <f_stop> <gamma> <show_flag>");
+		printf("Usage: ./test <file_path> <f_stop> <gamma> <show_flag> <output_file_path>");
 		return -1;
 	}
 
@@ -199,7 +200,7 @@ int main(int argc, char** argv)
 	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
-	imwrite("ldr.png", ldr);
+	imwrite(image_out_name, ldr);
 
     std::string ty =  type2str( ldr.type() );
     printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
