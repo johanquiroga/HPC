@@ -198,8 +198,8 @@ int main(int argc, char** argv)
 
 	ldr.create(height, width, CV_8UC3);
 	ldr.data = (unsigned char *)h_ImageOut;
-//	ldr.convertTo(ldr, CV_8UC3, 255);
-	imwrite("ldr.png", ldr*255);
+	ldr.convertTo(ldr, CV_8UC3, 255);
+	imwrite("ldr.png", ldr);
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
