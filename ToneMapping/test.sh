@@ -16,7 +16,7 @@ do
 	do
 		#argv=$((run*100))
 		#echo -n "$run|"
-		srun test images/img$i.exr 0.4 1.2 0 results/img$i.png
+		./test images/test$i.exr 0.4 1.2 0 results/test$i.png
 	done
 	#echo "Promedios:| | | | | | | | "
 	#echo
