@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 	ldr.convertTo(ldr, CV_8UC3, 255);
 	imwrite(image_out_name, ldr);
 
-    std::string ty =  type2str( ldr.type() );
+    ty =  type2str( ldr.type() );
     printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
 
 	if(show_flag) {
