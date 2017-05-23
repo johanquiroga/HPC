@@ -24,7 +24,7 @@ using namespace cv;
 // Shut down MPI cleanly if something goes wrong
 void my_abort(int err)
 {
-    cout << "Program FAILED\n";
+    std::cout << "Program FAILED\n";
     MPI_Abort(MPI_COMM_WORLD, err);
 //    exit(err);
 }

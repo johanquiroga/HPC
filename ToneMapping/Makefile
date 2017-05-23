@@ -10,10 +10,10 @@ LIBS = `pkg-config --libs opencv`
 #clean:
 #	rm test
 
-all: tone_mapping.cu tonemapp.cpp
-    mpicc $(LIBS) -c tonemapp.cpp -o tonemapp.o
+all: tone_mapping.cu tonemap.cpp
+    mpicc $(LIBS) -c tonemap.cpp -o tonemap.o
     nvcc -c tone_mapping.cu -o tone_mapping.o
-    mpicc tonemapp.o tone_mapping.o $(CFLAGS) -o tonemap
+    mpicc tonemap.o tone_mapping.o $(CFLAGS) -o tonemap
 
 clean:
     rm *.o tonemap
