@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 
     if(argc !=3) {
 //        printf("No image Data \n");
-        printf("Usage: ./build <f_stop> <gamma>");
+        printf("Usage: ./tonemapping <f_stop> <gamma>");
         my_abort(EXIT_FAILURE);
 //        return -1;
     }
