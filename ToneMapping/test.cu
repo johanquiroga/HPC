@@ -1,6 +1,7 @@
 //#include <stdio.h>
 //#include <stdlib.h>
 #include <iostream>
+#include <math.h>
 #include <cuda.h>
 //#include <opencv2/core/core.hpp>
 //#include <opencv2/highgui/highgui.hpp>
