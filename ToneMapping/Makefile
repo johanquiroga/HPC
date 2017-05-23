@@ -19,7 +19,7 @@ cuda: test.cu
 	nvcc -c test.cu -o test.o
 
 final: tonemap.o test.o
-	mpicc tonemap.o test.o -o tonemap -lcudart
+	mpicc tonemap.o test.o -lcudart -L/usr/local/cuda-8.0/lib64 -o tonemap -lcudart
 
 clean:
 	rm *.o tonemap
