@@ -19,7 +19,7 @@ cuda: test.cu
 	nvcc -c test.cu -o test.o
 
 final: tonemap.o test.o
-	mpicc tonemap.o test.o -o tonemap
+	mpicc tonemap.o test.o -o tonemap -lcudart
 
 clean:
 	rm *.o tonemap
