@@ -212,6 +212,9 @@ MPI_LDFLAGS :=
 MPI_LDFLAGS += $(addprefix -Xlinker ,$(LDFLAGS))
 MPI_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
+CFLAGS = `pkg-config --cflags opencv`
+LIBS = `pkg-config --libs opencv`
+
 # Common includes and paths for CUDA
 INCLUDES  := -I../../common/inc
 LIBRARIES :=
@@ -302,7 +305,7 @@ else
 endif
 
 tonemap.o:../tonemap.cpp
-	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) -o $@ -c $<
+	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) $(CFLAGS) -o $@ -c $(LIBS) $<
 
 test.o:../test.cu
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
