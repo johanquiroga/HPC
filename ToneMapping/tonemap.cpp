@@ -5,10 +5,11 @@
 #include <string>
 #include <vector>
 #include <mpi.h>
+#include <dirent.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "lib/helpers.h"
+//#include "lib/helpers.h"
 #include "lib/tone_mapping.h"
 
 #define BLOCK_SIZE 32
@@ -26,6 +27,34 @@ using namespace cv;
 void showImage(Mat &image, const char *window) {
     namedWindow(window, CV_WINDOW_NORMAL);
     imshow(window, image);
+}
+
+std::string change_image_extension(std::string target)
+{
+    int pos = target.rfind(".");
+    target.replace(pos, 4, ".png");
+    return target;
+}
+
+void read_files(std::vector<std::string> &files, std::string path)
+{
+    DIR *dir;
+    struct dirent *ent;
+    if((dir = opendir (path.c_str())) != NULL) {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+            //files += "\t";
+            std::string tmp = ent->d_name;
+            if(tmp != "." && tmp != "..") {
+                files.push_back(tmp);
+            }
+        }
+        closedir (dir);
+    } else {
+        /* could not open directory */
+        perror ("");
+        exit(EXIT_FAILURE);
+    }
 }
 
 // Shut down MPI cleanly if something goes wrong
