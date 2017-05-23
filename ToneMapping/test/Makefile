@@ -312,14 +312,14 @@ test.o:../test.cu
 
 tonemapping: tonemap.o test.o
 	$(EXEC) $(MPICXX) $(MPI_LDFLAGS) $(CFLAGS) -o $@ $+ $(LIBRARIES) $(LIBS)
-	$(EXEC) mkdir -p ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
-	$(EXEC) cp $@ ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+#	$(EXEC) mkdir -p ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+#    $(EXEC) cp $@ ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
 run: build
 	$(EXEC) ./tonemapping
 
 clean:
 	rm -f tonemapping tonemap.o test.o
-	rm -rf ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/tonemapping
+#	rm -rf ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/tonemapping
 
 clobber: clean
