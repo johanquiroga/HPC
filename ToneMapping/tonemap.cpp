@@ -6,6 +6,7 @@
 #include <vector>
 #include <mpi.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "lib/helpers.h"
 #include "lib/tone_mapping.h"
@@ -21,6 +22,11 @@
         my_abort(-1); }
 
 using namespace cv;
+
+void showImage(Mat &image, const char *window) {
+    namedWindow(window, CV_WINDOW_NORMAL);
+    imshow(window, image);
+}
 
 // Shut down MPI cleanly if something goes wrong
 void my_abort(int err)

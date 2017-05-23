@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include <string>
 #include <dirent.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/core/core.hpp>
 
 using namespace cv;
 
@@ -33,11 +32,6 @@ using namespace cv;
 
     return r;
 }*/
-
-void showImage(Mat &image, const char *window) {
-    namedWindow(window, CV_WINDOW_NORMAL);
-    imshow(window, image);
-}
 
 std::string change_image_extension(std::string target)
 {
