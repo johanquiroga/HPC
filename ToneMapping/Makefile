@@ -1,5 +1,7 @@
 #CUDAC = nvcc
 CFLAGS = `pkg-config --cflags opencv`
+CUDAFLAGS = `pkg-config --cflags cuda-8.0`
+CUDALIBS = `pkg-config --libs cuda-8.0`
 LIBS = `pkg-config --libs opencv`
 
 # tone_mapping: tone_mapping.cu
@@ -19,7 +21,7 @@ cuda: test.cu
 	nvcc -c test.cu -o test.o
 
 final: tonemap.o test.o
-	mpicc tonemap.o test.o $(LIBS) -o tonemap $(CFLAGS)
+	mpicc tonemap.o test.o -lcudart $(LIBS) $(CUDALIBS) -o tonemap $(CFLAGS) $(CUDAFLAGS)
 
 clean:
 	rm *.o tonemap
