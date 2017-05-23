@@ -305,13 +305,13 @@ else
 endif
 
 tonemap.o:../tonemap.cpp
-	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) $(CFLAGS) -o $@ -c $(LIBS) $<
+	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) $(CFLAGS) -o $@ -c $<
 
 test.o:../test.cu
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
 tonemapping: tonemap.o test.o
-	$(EXEC) $(MPICXX) $(MPI_LDFLAGS) -o $@ $+ $(LIBRARIES)
+	$(EXEC) $(MPICXX) $(MPI_LDFLAGS) $(CFLAGS) -o $@ $+ $(LIBRARIES) $(LIBS)
 	$(EXEC) mkdir -p ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	$(EXEC) cp $@ ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
