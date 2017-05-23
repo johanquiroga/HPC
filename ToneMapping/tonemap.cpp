@@ -65,7 +65,7 @@ void my_abort(int err)
 //    exit(err);
 }
 
-void task(std::string image_name, float f_stop, float gamma, int block_size)
+void task(std::string image_name, float f_stop, float gamma, int block_size, std::string images_path, std::string dst_path)
 {
     float *h_ImageData, *h_ImageOut;
     std::string image_out_name;
@@ -73,7 +73,9 @@ void task(std::string image_name, float f_stop, float gamma, int block_size)
     Size imageSize;
     int width, height, channels, sizeImage;
 
-    hdr = imread(image_name.c_str(), -1);
+    std::string path = images_path + "/" + image_name;
+
+    hdr = imread(path.c_str(), -1);
 
     if(!hdr.data) {
         printf("No image Data \n");
@@ -101,7 +103,7 @@ void task(std::string image_name, float f_stop, float gamma, int block_size)
     ldr.create(height, width, CV_32FC3);
     ldr.data = (unsigned char *)h_ImageOut;
     ldr.convertTo(ldr, CV_8UC3, 255);
-    image_out_name = "Results/" + change_image_extension(image_name);
+    image_out_name = dst_path + change_image_extension(image_name);
     imwrite(image_out_name.c_str(), ldr);
 
     free(h_ImageOut);
@@ -119,9 +121,9 @@ int main(int argc, char** argv)
         my_abort(EXIT_FAILURE);
     }
 
-    if(argc !=3) {
+    if(argc !=5) {
 //        printf("No image Data \n");
-        printf("Usage: ./tonemapping <f_stop> <gamma>");
+        printf("Usage: ./tonemapping <f_stop> <gamma> <image_src> <results_dst>");
         my_abort(EXIT_FAILURE);
 //        return -1;
     }
@@ -134,8 +136,11 @@ int main(int argc, char** argv)
     if(taskid == 0) {
         float f_stop = atof(argv[1]);
         float gamma = atof(argv[2]);
+        std::string images_path(argv[3]);
+        std::string dst_path(argv[4]);
+
         std::vector<std::string> files;
-        read_files(files, "./images");
+        read_files(files, images_path.c_str());
 
         int j=1;
         while(true) {
