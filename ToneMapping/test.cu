@@ -1,5 +1,6 @@
 //#include <stdio.h>
 //#include <stdlib.h>
+#include <iostream>
 #include <cuda.h>
 //#include <opencv2/core/core.hpp>
 //#include <opencv2/highgui/highgui.hpp>
@@ -147,7 +148,7 @@ __global__ void tonemap_kernel(float* imageIn, float* imageOut, int width, int h
 	}
 }
 
-void tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, float f_stop, float gamma, int blockSize,
+void tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int blockSize,
              int sizeImage)
 {
     float *d_ImageData, *d_ImageOut;
