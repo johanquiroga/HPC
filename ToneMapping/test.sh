@@ -2,8 +2,8 @@
 #
 #SBATCH --job-name=test_tone_mapping
 #SBATCH --output=res_test_tone_mapping.txt
-#SBATCH --tasks=1
-#SBATCH --nodes=1
+#SBATCH --tasks=2
+#SBATCH --nodes=2
 #SBATCH --gres=gpu:1
 
 for i in {1..5}
@@ -16,7 +16,7 @@ do
 	do
 		#argv=$((run*100))
 		#echo -n "$run|"
-		./test images/test$i.exr 0.4 1.2 0 results/test$i.png
+		mpirun ./build/tonemapping 0.4 1.2 ./images ./results
 	done
 	#echo "Promedios:| | | | | | | | "
 	#echo

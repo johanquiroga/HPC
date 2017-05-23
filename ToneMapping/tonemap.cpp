@@ -103,7 +103,7 @@ void task(std::string image_name, float f_stop, float gamma, int block_size, std
     ldr.create(height, width, CV_32FC3);
     ldr.data = (unsigned char *)h_ImageOut;
     ldr.convertTo(ldr, CV_8UC3, 255);
-    image_out_name = dst_path + change_image_extension(image_name);
+    image_out_name = dst_path + "/" + change_image_extension(image_name);
     imwrite(image_out_name.c_str(), ldr);
 
     free(h_ImageOut);
@@ -146,6 +146,7 @@ int main(int argc, char** argv)
         while(true) {
             if(!files.empty()) {
                 if(j<=nworkers) {
+                    std::cout << "Sending \"" << file.back() << "\" to \"" << j << "\"" << std::endl;
                     // send op = "work";
                     // MPI_Send(op.c_str(), op.length(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                     // send file name: file.back();
