@@ -13,13 +13,13 @@ LIBS = `pkg-config --libs opencv`
 all: mpi cuda final
 
 mpi: tonemap.cpp
-	mpicc -c tonemap.cpp $(LIBS) -o tonemap.o
+	mpicc -c tonemap.cpp -o tonemap.o
 
 cuda: test.cu
 	nvcc -c test.cu -o test.o
 
 final: tonemap.o test.o
-	mpicc tonemap.o test.o $(CFLAGS) -o tonemap
+	mpicc tonemap.o test.o $(LIBS) -o tonemap $(CFLAGS)
 
 clean:
 	rm *.o tonemap
