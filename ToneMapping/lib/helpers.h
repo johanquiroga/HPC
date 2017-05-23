@@ -11,7 +11,7 @@
 
 using namespace cv;
 
-std::string type2str(int type) {
+/*std::string type2str(int type) {
     std::string r;
 
     uchar depth = type & CV_MAT_DEPTH_MASK;
@@ -32,7 +32,7 @@ std::string type2str(int type) {
     r += (chans+'0');
 
     return r;
-}
+}*/
 
 void showImage(Mat &image, const char *window) {
     namedWindow(window, CV_WINDOW_NORMAL);
