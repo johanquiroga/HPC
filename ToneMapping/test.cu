@@ -16,7 +16,7 @@
 #define CUDA_CHECK(call) \
     if((call) != cudaSuccess) { \
         cudaError_t err = cudaGetLastError(); \
-        cerr << "CUDA error calling \""#call"\", code is " << err << endl; \
+        std::cerr << "CUDA error calling \""#call"\", code is " << err << std::endl; \
         my_abort(err); }
 
 //using namespace cv;=

@@ -16,7 +16,7 @@
 // Error handling macros
 #define MPI_CHECK(call) \
     if((call) != MPI_SUCCESS) { \
-        cerr << "MPI error calling \""#call"\"\n"; \
+        std::cerr << "MPI error calling \""#call"\"\n"; \
         my_abort(-1); }
 
 using namespace cv;
