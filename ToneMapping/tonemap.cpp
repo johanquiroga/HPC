@@ -134,6 +134,7 @@ int main(int argc, char** argv)
 
 	//char* image_name = argv[1];
 	if(taskid == 0) {
+        int block_size = BLOCK_SIZE;
 		float f_stop = atof(argv[1]);
 		float gamma = atof(argv[2]);
 		std::string images_path(argv[3]);
@@ -154,7 +155,7 @@ int main(int argc, char** argv)
                 MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&block_size, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
                 files.pop_back();
                 j++;
             }
@@ -180,7 +181,7 @@ int main(int argc, char** argv)
                     MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
                     MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
                     MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                    MPI_Send(&BLOCK_SIZE, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(&block_size, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
                     files.pop_back();
                     count++;
                 } else {
@@ -202,7 +203,7 @@ int main(int argc, char** argv)
                 MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&f_stop, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&gamma, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&block_size, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD);
                 i++;
             }
             int j = 1;
@@ -229,14 +230,14 @@ int main(int argc, char** argv)
                     MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                     MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
                     MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-                    MPI_Send(&BLOCK_SIZE, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(&block_size, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
                     files.pop_back();
                     // send op = "work";
                     // MPI_Send(op.c_str(), op.length(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                     // send file name: file.back();
                     // send f_stop
                     // send gamma
-                    // send BLOCK_SIZE
+                    // send block_size
                     // files.pop_back();
                     j++;
                 }
@@ -250,7 +251,7 @@ int main(int argc, char** argv)
                 MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, workerid, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&f_stop, 1, MPI_FLOAT, workerid, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(&gamma, 1, MPI_FLOAT, workerid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, workerid, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&block_size, 1, MPI_INT, workerid, FROM_MASTER, MPI_COMM_WORLD);
                 files.pop_back();
                 //receive file name
                 //receive time
