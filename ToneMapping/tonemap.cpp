@@ -142,7 +142,82 @@ int main(int argc, char** argv)
 		std::vector<std::string> files;
 		read_files(files, images_path);
 
-        while(true) {
+        if (files.size() >= nworkers) {
+            int j = 1;
+            while (j <= nworkers) {
+                // send
+                std::string op = "work";
+                std::string tmp = files.back();
+                MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
+                files.pop_back();
+                j++;
+            }
+            j = 1;
+            int count = nworkers;
+            while (j <= count) {
+                int tmpid;
+                if(j > nworkers) {
+                    tmpid = j - nworkers;
+                } else {
+                    tmpid = j;
+                }
+                // receive
+                int workerid;
+                MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                if (!files.empty()) {
+                    // send
+                    std::string op = "work";
+                    std::string tmp = files.back();
+                    MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    MPI_Send(&BLOCK_SIZE, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                    files.pop_back();
+                    count++;
+                } else {
+                    // finish
+                    std::string op = "finish";
+                    MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+                }
+                j++;
+            }
+        } else {
+            int i = 0;
+            while (i < files.size()) {
+                // send to i+1
+                std::string op = "work";
+                std::string tmp = files[i];
+                MPI_Send(op.c_str(), op.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&f_stop, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&gamma, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD);
+                i++;
+            }
+            int j = 1;
+            while (j <= i) {
+                // receive
+                int workerid;
+                MPI_Recv(&workerid, 1, MPI_INT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                // send finish
+                std::string op = "finish";
+                MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+                j++;
+            }
+        }
+
+        /*while(true) {
             if(!files.empty()) {
                 std::string op = "work";
                 if(j<=nworkers) {
@@ -188,7 +263,7 @@ int main(int argc, char** argv)
                 // send op = finish to all workers
                 break;
             }
-		}
+		}*/
 	}
 
 	if(taskid > 0) {
@@ -242,7 +317,10 @@ int main(int argc, char** argv)
 			MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-			task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
+            std::cout << "Process \"" << taskid << "\" received file \"" << file_name << "\" and settings: " <<
+                      images_path << ", " << dst_path << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
+
+			//task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
 
 			MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD);
 
@@ -269,74 +347,3 @@ int main(int argc, char** argv)
 	MPI_Finalize();
 	return 0;
 }
-
-/*
-while(true) {
-    if (files.size() >= nworkers) {
-        int j = 1;
-        while (j <= nworkers) {
-            // send
-            std::string op = "work";
-            std::string tmp = files.back();
-            MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-            MPI_Send(&BLOCK_SIZE, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
-            files.pop_back();
-            j++;
-        }
-        j = 1;
-        int count = nworkers;
-        while (j <= count) {
-            int tmpid;
-            if(j > nworkers) {
-                tmpid = j - nworkers;
-            } else {
-                tmpid = j;
-            }
-            // receive
-            int workerid;
-            MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            if (!files.empty()) {
-                // send
-                std::string op = "work";
-                std::string tmp = files.back();
-                MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                MPI_Send(&BLOCK_SIZE, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-                files.pop_back();
-                count++;
-            } else {
-                // finish
-                std::string op = "finish";
-                MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-            }
-            j++;
-        }
-    } else {
-        int i = 0;
-        while (i < files.size()) {
-            // send to i+1
-            i++;
-        }
-        int j = 1;
-        while (j <= i) {
-            // receive
-            // send finish
-            j++;
-        }
-    }
-    int j = 1;
-    while (j <= nworkers) {
-        // send finish
-        j++;
-    }
-    break;
-}*/
