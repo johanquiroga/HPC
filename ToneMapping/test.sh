@@ -2,11 +2,10 @@
 #
 #SBATCH --job-name=test_tone_mapping
 #SBATCH --output=res_test_tone_mapping.txt
-#SBATCH --tasks=1
-#SBATCH --nodes=1
+#SBATCH --ntasks=3
 #SBATCH --gres=gpu:1
 
-mpirun ./build/tonemapping 0.4 1.2 ./images ./results
+mpirun build/tonemapping 0.4 1.2 images results ,
 
 #for i in {1..5}
 #do
