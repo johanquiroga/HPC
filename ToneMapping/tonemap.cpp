@@ -208,7 +208,7 @@ int main(int argc, char** argv)
 				// send to i+1
 				std::string op = "work";
 				std::string tmp = files[i];
-				std::cout << "worker: " << j << std::endl;
+				std::cout << "worker: " << i << std::endl;
 				std::cout << "File: " << tmp << std::endl;
 				MPI_Send(op.c_str(), op.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
 				MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
