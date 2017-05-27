@@ -352,7 +352,7 @@ int main(int argc, char** argv)
 			// Now receive the message with the allocated buffer
 			MPI_CHECK(MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "op: " << op << std::endl;
+			std::cout << "op: " << op << std::strlen(op) << " " << length_op << std::endl;
 
 			if(op == "finish") {
 				free(op);
