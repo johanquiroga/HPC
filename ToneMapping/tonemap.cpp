@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 			while (j <= nworkers) {
 				// send
 				std::cout << "more files than workers" << std::endl;
-				std::string op = "work";
+				std::string op("work");
 				std::string tmp = files.back();
 				std::cout << "worker: " << j << std::endl;
 				std::cout << "File: " << tmp << std::endl;
