@@ -180,11 +180,12 @@ int main(int argc, char** argv)
 				// receive
 				int workerid;
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+				std::cout << "worker: " << tmpid << "workerid: " << workerid << std::endl;
 				if (!files.empty()) {
 					// send
 					std::string op = "work";
 					std::string tmp = files.back();
-					std::cout << "worker: " << j << std::endl;
+					std::cout << "worker: " << tmpid << std::endl;
 					std::cout << "File: " << tmp << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
@@ -198,7 +199,7 @@ int main(int argc, char** argv)
 				} else {
 					// finish
 					std::string op = "finish";
-					std::cout << "worker: " << j << std::endl;
+					std::cout << "worker: " << tmpid << std::endl;
 					std::cout << "finish" << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 				}
@@ -229,7 +230,7 @@ int main(int argc, char** argv)
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				// send finish
 				std::string op = "finish";
-				std::cout << "worker: " << j << std::endl;
+				std::cout << "worker: " << j << "workerid: " << workerid << std::endl;
 				std::cout << "finish" << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
@@ -288,11 +289,11 @@ int main(int argc, char** argv)
 	if(taskid > 0) {
 		while(true) {
 			MPI_Status status_op, status_images, status_dst, status_file;
-			int length_op, length_images, length_dst, length_file;
-			char* op;
-			char* images_path;
-			char* dst_path;
-			char* file_name;
+			int length_op = 0, length_images = 0, length_dst = 0, length_file = 0;
+			char* op = NULL;
+			char* images_path = NULL;
+			char* dst_path = NULL;
+			char* file_name = NULL;
 			float f_stop;
 			float gamma;
 			int block_size;
