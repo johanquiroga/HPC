@@ -307,10 +307,10 @@ endif
 tonemap.o:../tonemap.cpp
 	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) $(CFLAGS) -o $@ -c $<
 
-test.o:../test.cu
+tm_filter.o:../tm_filter.cu
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
-tonemapping: tonemap.o test.o
+tonemapping: tonemap.o tm_filter.o
 	$(EXEC) $(MPICXX) $(MPI_LDFLAGS) $(CFLAGS) -o $@ $+ $(LIBRARIES) $(LIBS)
 #	$(EXEC) mkdir -p ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 #    $(EXEC) cp $@ ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
@@ -319,7 +319,7 @@ run: build
 	$(EXEC) ./tonemapping
 
 clean:
-	rm -f tonemapping tonemap.o test.o
+	rm -f tonemapping tonemap.o tm_filter.o
 #	rm -rf ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/tonemapping
 
 clobber: clean
