@@ -33,7 +33,7 @@ void my_abort(int err)
 //    exit(err);
 }
 
-void task(std::string image_name, float f_stop, float gamma, int block_size, std::string images_path, std::string dst_path)
+float task(std::string image_name, float f_stop, float gamma, int block_size, std::string images_path, std::string dst_path)
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
@@ -66,7 +66,7 @@ void task(std::string image_name, float f_stop, float gamma, int block_size, std
 	h_ImageData = (float *)hdr.data;
 	h_ImageOut = (float *) malloc (sizeImage);
 
-	float time_result = tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, block_size, sizeImage);
+	float elapsed_time = tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, block_size, sizeImage);
 
 	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;
@@ -75,6 +75,8 @@ void task(std::string image_name, float f_stop, float gamma, int block_size, std
 	imwrite(image_out_name.c_str(), ldr);
 
 	free(h_ImageOut);
+
+	return elapsed_time;
 }
 
 int main(int argc, char** argv)
@@ -138,15 +140,15 @@ int main(int argc, char** argv)
 				float elapsed_time = 0.0;
 
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-//				MPI_CHECK(MPI_Recv(&elapsed_time, 1, MPI_FLOAT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+				MPI_CHECK(MPI_Recv(&elapsed_time, 1, MPI_FLOAT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				// Receive file_name
 				MPI_CHECK(MPI_Probe(MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, &status_file));
 				MPI_CHECK(MPI_Get_count(&status_file, MPI_CHAR, &length_file));
 				file_name = (char*)malloc(sizeof(char) * length_file);
 				MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-//				printTime(std::string(file_name), elapsed_time, separator);
-				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
+				printTime(std::string(file_name), elapsed_time, separator);
+//				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
 
 				int tmpid = workerid;
 
@@ -205,15 +207,15 @@ int main(int argc, char** argv)
 				float elapsed_time = 0.0;
 
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-//				MPI_CHECK(MPI_Recv(&elapsed_time, 1, MPI_FLOAT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+				MPI_CHECK(MPI_Recv(&elapsed_time, 1, MPI_FLOAT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				// Receive file_name
 				MPI_CHECK(MPI_Probe(j, FROM_WORKER, MPI_COMM_WORLD, &status_file));
 				MPI_CHECK(MPI_Get_count(&status_file, MPI_CHAR, &length_file));
 				file_name = (char*)malloc(sizeof(char) * length_file);
 				MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-//				printTime(std::string(file_name), elapsed_time, separator);
-				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
+				printTime(std::string(file_name), elapsed_time, separator);
+//				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
 
 				// send finish
 				std::string op = "finish";
@@ -239,6 +241,7 @@ int main(int argc, char** argv)
 			float f_stop;
 			float gamma;
 			int block_size;
+			float elapsed_time = 0.0;
 
 			// Receive op to perform
 			// Probe for an incoming message from process zero
@@ -285,10 +288,10 @@ int main(int argc, char** argv)
 //			std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" and settings: " <<
 //			          std::string(images_path) << ", " << std::string(dst_path) << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
 
-			//task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
+			elapsed_time = task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
 
 			MPI_CHECK(MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD));
-//			MPI_CHECK(MPI_Send(&elapsed_time, 1, MPI_FLOAT, 0, FROM_WORKER, MPI_COMM_WORLD));
+			MPI_CHECK(MPI_Send(&elapsed_time, 1, MPI_FLOAT, 0, FROM_WORKER, MPI_COMM_WORLD));
 			MPI_CHECK(MPI_Send(file_name, std::strlen(file_name)+1, MPI_CHAR, 0, FROM_WORKER, MPI_COMM_WORLD));
 
 			free(images_path); free(dst_path); free(file_name);
