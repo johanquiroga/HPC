@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 				file_name = (char*)malloc(sizeof(char) * length_file);
 				MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-				printTime(std::string(file_name), elapsed_time, separator);
+				printTime(std::string(file_name), elapsed_time, separator, workerid);
 				free(file_name);
 //				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
 
