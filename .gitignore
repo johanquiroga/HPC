@@ -20,3 +20,4 @@ cuda_matrix_mult
 *.nvvp
 */images
 */results
+*/Sequential/testsHDR
