@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 #SBATCH --job-name=test_tone_mapping
-#SBATCH --output=res_test_tone_mapping.txt
+#SBATCH --output=res_test_tone_mapping.md
 #SBATCH --ntasks=3
 #SBATCH --gres=gpu:1
 
-echo "imagen|tiempo|id worker"
+echo "imagen,tiempo,id worker"
 echo ":---:|:---:|:---:"
 
-mpirun build/tonemapping 0.4 1.2 images results |
+mpirun build/tonemapping 0.4 1.2 images results \|
 
 #for i in {1..5}
 #do
