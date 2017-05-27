@@ -142,6 +142,11 @@ int main(int argc, char** argv)
 
 		std::vector<std::string> files;
 		read_files(files, images_path);
+	std::cout << "f_stop: " << f_stop << std::endl;
+	std::cout << "gamma: " << gamma << std::endl;
+	std::cout << "images_path: " << images_path << std::endl;
+	std::cout << "dst_path: " << dst_path << std::endl;
+	std::cout << "size: " << files.size() << std::endl;
 
         if (files.size() >= nworkers) {
             int j = 1;
@@ -149,6 +154,8 @@ int main(int argc, char** argv)
                 // send
                 std::string op = "work";
                 std::string tmp = files.back();
+		std::cout << "worker: " << j << std::endl;
+		std::cout << "File: " << tmp << std::endl;
                 MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
                 MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
@@ -301,6 +308,8 @@ int main(int argc, char** argv)
 			MPI_Get_count(&status, MPI_CHAR, &string_length);
 			images_path = (char*)malloc(sizeof(char) * string_length);
 			MPI_Recv(images_path, string_length, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+			std::cout << "images_path: " << images_path << std::endl;
 
 			// Receive dst_path
 			MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status);
