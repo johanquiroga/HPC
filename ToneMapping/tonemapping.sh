@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #SBATCH --job-name=test_tone_mapping
-#SBATCH --output=res_test_tone_mapping.md
+#SBATCH --output=res_mpi_tone_mapping.md
 #SBATCH --ntasks=3
 #SBATCH --gres=gpu:1
 
