@@ -112,9 +112,9 @@ void task(std::string image_name, float f_stop, float gamma, int block_size, std
 int main(int argc, char** argv)
 {
 	int numtasks, taskid;
-	MPI_Init(&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
-	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+	MPI_CHECK(MPI_Init(&argc, &argv));
+	MPI_CHECK(MPI_Comm_rank(MPI_COMM_WORLD, &taskid));
+	MPI_CHECK(MPI_Comm_size(MPI_COMM_WORLD, &numtasks));
 
 	if(numtasks < 2) {
 		printf("Need at least two tasks...\n");
@@ -156,13 +156,13 @@ int main(int argc, char** argv)
 				std::string tmp = files.back();
 				std::cout << "worker: " << j << std::endl;
 				std::cout << "File: " << tmp << std::endl;
-				MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&block_size, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD);
+				MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD));
 				files.pop_back();
 				j++;
 			}
@@ -177,20 +177,20 @@ int main(int argc, char** argv)
 				}
 				// receive
 				int workerid;
-				MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				if (!files.empty()) {
 					// send
 					std::string op = "work";
 					std::string tmp = files.back();
 					std::cout << "worker: " << j << std::endl;
 					std::cout << "File: " << tmp << std::endl;
-					MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
-					MPI_Send(&block_size, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+					MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					files.pop_back();
 					count++;
 				} else {
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
 					std::string op = "finish";
 					std::cout << "worker: " << j << std::endl;
 					std::cout << "finish" << std::endl;
-					MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD);
+					MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 				}
 				j++;
 			}
@@ -210,25 +210,25 @@ int main(int argc, char** argv)
 				std::string tmp = files[i];
 				std::cout << "worker: " << i << std::endl;
 				std::cout << "File: " << tmp << std::endl;
-				MPI_Send(op.c_str(), op.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&f_stop, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&gamma, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD);
-				MPI_Send(&block_size, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD);
+				MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				i++;
 			}
 			int j = 1;
 			while (j <= i) {
 				// receive
 				int workerid;
-				MPI_Recv(&workerid, 1, MPI_INT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				// send finish
 				std::string op = "finish";
 				std::cout << "worker: " << j << std::endl;
 				std::cout << "finish" << std::endl;
-				MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD);
+				MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
 			}
 		}
@@ -296,14 +296,14 @@ int main(int argc, char** argv)
 
 			// Receive op to perform
 			// Probe for an incoming message from process zero
-			MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_op);
+			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_op));
 			// When probe returns, the status object has the size and other
 			// attributes of the incoming message. Get the message size
-			MPI_Get_count(&status_op, MPI_CHAR, &length_op);
+			MPI_CHECK(MPI_Get_count(&status_op, MPI_CHAR, &length_op));
 			// Allocate a buffer to hold the incoming string
 			op = (char*)malloc(sizeof(char) * length_op);
 			// Now receive the message with the allocated buffer
-			MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_CHECK(MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 			if(op == "finish") {
 				free(op);
@@ -312,35 +312,35 @@ int main(int argc, char** argv)
 			free(op);
 
 			// Receive images_path
-			MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_images);
-			MPI_Get_count(&status_images, MPI_CHAR, &length_images);
+			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_images));
+			MPI_CHECK(MPI_Get_count(&status_images, MPI_CHAR, &length_images));
 			images_path = (char*)malloc(sizeof(char) * length_images);
-			MPI_Recv(images_path, length_images, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_CHECK(MPI_Recv(images_path, length_images, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 			std::cout << "images_path: " << images_path << std::endl;
 
 			// Receive dst_path
-			MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_dst);
-			MPI_Get_count(&status_dst, MPI_CHAR, &length_dst);
+			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_dst));
+			MPI_CHECK(MPI_Get_count(&status_dst, MPI_CHAR, &length_dst));
 			dst_path = (char*)malloc(sizeof(char) * length_dst);
-			MPI_Recv(dst_path, length_dst, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_CHECK(MPI_Recv(dst_path, length_dst, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 			// Receive file_name
-			MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_file);
-			MPI_Get_count(&status_file, MPI_CHAR, &length_file);
+			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_file));
+			MPI_CHECK(MPI_Get_count(&status_file, MPI_CHAR, &length_file));
 			file_name = (char*)malloc(sizeof(char) * length_file);
-			MPI_Recv(file_name, length_file, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			MPI_Recv(&f_stop, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_CHECK(MPI_Recv(&f_stop, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 			std::cout << "Process \"" << taskid << "\" received file \"" << file_name << "\" and settings: " <<
 					  images_path << ", " << dst_path << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
 
 			//task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
 
-			MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD);
+			MPI_CHECK(MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD));
 
 			free(images_path); free(dst_path); free(file_name);
 			// receive op
@@ -362,6 +362,6 @@ int main(int argc, char** argv)
 		}
 	}
 
-	MPI_Finalize();
+	MPI_CHECK(MPI_Finalize());
 	return 0;
 }
