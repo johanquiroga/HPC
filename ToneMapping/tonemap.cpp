@@ -229,7 +229,7 @@ int main(int argc, char** argv)
 			end = clock();
 		}
 		batch_time = ((double)(end - start))/CLOCKS_PER_SEC;
-		printf("\nbatch time\n%.10f\n", batch_time);
+		printTime("batch time", batch_time, separator, taskid);
 	}
 
 	if(taskid > 0) {
