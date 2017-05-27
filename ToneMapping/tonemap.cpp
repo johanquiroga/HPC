@@ -155,10 +155,10 @@ int main(int argc, char** argv)
 				// send
 				std::string op("work");
 				std::string tmp = files.back();
-				std::cout << "worker: " << j << std::endl;
-				std::cout << "File: " << tmp << std::endl;
+//				std::cout << "worker: " << j << std::endl;
+//				std::cout << "File: " << tmp << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.length()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
-				std::cout << "op message sended" << std::endl;
+//				std::cout << "op message sended" << std::endl;
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
@@ -180,13 +180,13 @@ int main(int argc, char** argv)
 				// receive
 				int workerid;
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-				std::cout << "worker: " << tmpid << "workerid: " << workerid << std::endl;
+				std::cout << "Finished: worker: " << tmpid << " workerid: " << workerid << std::endl;
 				if (!files.empty()) {
 					// send
 					std::string op = "work";
 					std::string tmp = files.back();
-					std::cout << "worker: " << tmpid << std::endl;
-					std::cout << "File: " << tmp << std::endl;
+//					std::cout << "worker: " << tmpid << std::endl;
+//					std::cout << "File: " << tmp << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 					// finish
 					std::string op = "finish";
 					std::cout << "worker: " << tmpid << std::endl;
-					std::cout << "finish" << std::endl;
+					std::cout << "Terminate" << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 				}
 				j++;
@@ -212,8 +212,8 @@ int main(int argc, char** argv)
 				// send to i+1
 				std::string op = "work";
 				std::string tmp = files[i];
-				std::cout << "worker: " << i << std::endl;
-				std::cout << "File: " << tmp << std::endl;
+//				std::cout << "worker: " << i << std::endl;
+//				std::cout << "File: " << tmp << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
@@ -231,7 +231,7 @@ int main(int argc, char** argv)
 				// send finish
 				std::string op = "finish";
 				std::cout << "worker: " << j << "workerid: " << workerid << std::endl;
-				std::cout << "finish" << std::endl;
+				std::cout << "Terminate" << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
 			}
@@ -323,7 +323,7 @@ int main(int argc, char** argv)
 			images_path = (char*)malloc(sizeof(char) * length_images);
 			MPI_CHECK(MPI_Recv(images_path, length_images, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "images_path: " << images_path << std::endl;
+//			std::cout << "images_path: " << images_path << std::endl;
 
 			// Receive dst_path
 			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_dst));
