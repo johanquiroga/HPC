@@ -207,10 +207,11 @@ int main(int argc, char** argv)
 				std::string op = "finish";
 //				std::cout << "worker: " << j << std::endl;
 //				std::cout << "Terminate" << std::endl;
-				std::cout << "Process \"" << taskid << "\" sending op \"" << op << " to: " << j << std::endl;
+				std::cout << "Process \"" << taskid << "\" sending op \"" << op << "\" to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
 			}
+			std::cout << "Finishing up..." << std::endl;
 			/*while (j <= count) {
 				int tmpid;
 				if(j > nworkers) {
@@ -355,6 +356,7 @@ int main(int argc, char** argv)
 
 			if(op == "finish") {
 				free(op);
+				std::cout << "Finishing up..." << std::endl;
 				break;
 			}
 			free(op);
@@ -410,7 +412,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	std::cout << "Finishing up..." << std::endl;
+//	std::cout << "Finishing up..." << std::endl;
 	MPI_CHECK(MPI_Finalize());
 	std::cout << "Finished" << std::endl;
 	return 0;
