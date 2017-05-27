@@ -199,9 +199,9 @@ int main(int argc, char** argv)
 	cudaEventRecord(start);
 	tonemap<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, 32, f_stop, gamma);
 	cudaEventRecord(stop);
+	cudaDeviceSynchronize();
 	cudaEventElapsedTime(&milliseconds, start, stop);
 	printf("%s|%.10f\n", image_name, milliseconds/1000.0);
-	cudaDeviceSynchronize();
 
 	checkError(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
 
