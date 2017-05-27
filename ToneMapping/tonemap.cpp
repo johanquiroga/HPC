@@ -355,7 +355,7 @@ int main(int argc, char** argv)
 
 			std::cout << "op: " << op << std::strlen(op) << " " << length_op << std::endl;
 
-			if(op == "finish") {
+			if(strcmp(op,"finish")) {
 				free(op);
 				std::cout << "Process \"" << taskid << "\" Finishing up..." << std::endl;
 				break;
