@@ -18,3 +18,5 @@ image_out_host.jpg
 cuda_matrix_mult
 /build
 *.nvvp
+*/images
+*/results
