@@ -69,7 +69,7 @@ void read_files(std::vector<std::string> &files, std::string path)
 
 void printTime(std::string file_name, float time, std::string separator, int worker)
 {
-	printf("%s%s%.10f%s%d%s\n", file_name.c_str(), separator.c_str(), time, separator.c_str(), worker, separator.c_str());
+	printf("%s%s%.10f%s%d\n", file_name.c_str(), separator.c_str(), time, separator.c_str(), worker);
 
 }
 
