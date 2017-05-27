@@ -113,15 +113,12 @@ int main(int argc, char** argv)
 		if (files.size() >= nworkers) {
 			start = clock();
 			int j = 1;
-//			std::cout << "more files than workers" << std::endl;
 			while (j <= nworkers) {
 				// send
 				std::string op("work");
 				std::string tmp = files.back();
-//				std::cout << "worker: " << j << std::endl;
 //				std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.length()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
-//				std::cout << "op message sended" << std::endl;
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
@@ -149,17 +146,15 @@ int main(int argc, char** argv)
 				MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 //				printTime(std::string(file_name), elapsed_time, separator);
-				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << " from: " << workerid << std::endl;
+				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
 
-//				std::cout << "Finished: worker: " << workerid << std::endl;
 				int tmpid = workerid;
 
 				if (!files.empty()) {
 					// send
 					std::string op = "work";
 					std::string tmp = files.back();
-//					std::cout << "worker: " << tmpid << std::endl;
-					std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << tmpid << std::endl;
+//					std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << tmpid << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
@@ -177,8 +172,6 @@ int main(int argc, char** argv)
 			while (j <= nworkers) {
 				// send finish
 				std::string op = "finish";
-//				std::cout << "worker: " << j << std::endl;
-//				std::cout << "Terminate" << std::endl;
 //				std::cout << "Process \"" << taskid << "\" sending op \"" << op << "\" to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
@@ -188,13 +181,11 @@ int main(int argc, char** argv)
 		} else {
 			start = clock();
 			int i = 0;
-//			std::cout << "more workers than files"  << std::endl;
 			while (i < files.size()) {
 				// send to i+1
 				std::string op = "work";
 				std::string tmp = files[i];
-//				std::cout << "worker: " << i << std::endl;
-//				std::cout << "File: " << tmp << std::endl;
+//				std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << i+1 << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
@@ -221,13 +212,16 @@ int main(int argc, char** argv)
 				file_name = (char*)malloc(sizeof(char) * length_file);
 				MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, j, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
+//				printTime(std::string(file_name), elapsed_time, separator);
+				std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" from: " << workerid << std::endl;
+
 				// send finish
 				std::string op = "finish";
-//				std::cout << "worker: " << j << "workerid: " << workerid << std::endl;
-//				std::cout << "Terminate" << std::endl;
+//				std::cout << "Process \"" << taskid << "\" sending op \"" << op << "\" to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
 			}
+//			std::cout << "Process \"" << taskid << "\" Finishing up..." << std::endl;
 			end = clock();
 		}
 		batch_time = ((double)(end - start))/CLOCKS_PER_SEC;
@@ -257,7 +251,7 @@ int main(int argc, char** argv)
 			// Now receive the message with the allocated buffer
 			MPI_CHECK(MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "op: " << op << std::endl;
+//			std::cout << "op: " << op << std::endl;
 
 			if(strcmp(op,"finish") == 0) {
 				free(op);
@@ -288,8 +282,8 @@ int main(int argc, char** argv)
 			MPI_CHECK(MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 			MPI_CHECK(MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" and settings: " <<
-			          std::string(images_path) << ", " << std::string(dst_path) << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
+//			std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" and settings: " <<
+//			          std::string(images_path) << ", " << std::string(dst_path) << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
 
 			//task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
 
@@ -298,22 +292,6 @@ int main(int argc, char** argv)
 			MPI_CHECK(MPI_Send(file_name, std::strlen(file_name)+1, MPI_CHAR, 0, FROM_WORKER, MPI_COMM_WORLD));
 
 			free(images_path); free(dst_path); free(file_name);
-			// receive op
-			// MPI_RECV();
-			// if(op == "finish") {
-			//      break;
-			//    }
-			// receive file name
-			// receive f_stop
-			// receive gamma
-			// receive block_size
-
-			// tic
-			// call to task();
-			// toc
-
-			// send name of file processed
-			// send time
 		}
 	}
 

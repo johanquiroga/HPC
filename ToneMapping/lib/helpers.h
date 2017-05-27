@@ -67,4 +67,9 @@ void read_files(std::vector<std::string> &files, std::string path)
 	}
 }
 
+void printTime(std::string file_name, float time, std::string separator)
+{
+	printf("%s%s%.10f%s\n", file_name, separator, time, separator);
+}
+
 #endif //HPC_HELPERS_H
