@@ -3,7 +3,7 @@
 
 // Forward declarations
 extern "C" {
-    void tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int blockSize,
+    float tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int blockSize,
                  int sizeImage);
     void my_abort(int err);
 }

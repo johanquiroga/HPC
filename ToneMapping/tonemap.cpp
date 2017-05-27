@@ -66,7 +66,7 @@ void task(std::string image_name, float f_stop, float gamma, int block_size, std
 	h_ImageData = (float *)hdr.data;
 	h_ImageOut = (float *) malloc (sizeImage);
 
-	tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, block_size, sizeImage);
+	float time_result = tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, block_size, sizeImage);
 
 	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;

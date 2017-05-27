@@ -149,9 +149,14 @@ __global__ void tonemap_kernel(float* imageIn, float* imageOut, int width, int h
 	}
 }
 
-void tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int blockSize,
+float tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int blockSize,
              int sizeImage)
 {
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    float milliseconds = 0;
+
     float *d_ImageData, *d_ImageOut;
 
     CUDA_CHECK(cudaMalloc((void **)&d_ImageData, sizeImage));
@@ -160,13 +165,20 @@ void tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int c
 
     dim3 dimBlock(blockSize, blockSize, 1);
     dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
+
+    cudaEventRecord(start);
     tonemap_kernel<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, f_stop, gamma);
+    cudaEventRecord(stop);
+
     cudaDeviceSynchronize();
 
     CUDA_CHECK(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
 
     CUDA_CHECK(cudaFree(d_ImageData));
     CUDA_CHECK(cudaFree(d_ImageOut));
+
+    cudaEventElapsedTime(&milliseconds, start, stop);
+    return milliseconds/1000.0;
 }
 
 //void showImage(Mat &image, const char *window) {

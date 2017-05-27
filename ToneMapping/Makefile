@@ -5,8 +5,8 @@ LIBS = `pkg-config --libs opencv`
 # tone_mapping: tone_mapping.cu
 # 	$(CUDAC) $(LIBS) -o tone_mapping tone_mapping.cu $(CFLAGS)
 
-#test: test.cu
-#	$(CUDAC) $(LIBS) -o test test.cu $(CFLAGS)
+#tm_filter: tm_filter.cu
+#	$(CUDAC) $(LIBS) -o tm_filter tm_filter.cu $(CFLAGS)
 #clean:
 #	rm test
 
