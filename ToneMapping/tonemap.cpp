@@ -205,7 +205,7 @@ int main(int argc, char** argv)
 			while (j <= nworkers) {
 				// send finish
 				std::string op = "finish";
-				std::cout << "worker: " << j << "workerid: " << workerid << std::endl;
+				std::cout << "worker: " << j << std::endl;
 				std::cout << "Terminate" << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
