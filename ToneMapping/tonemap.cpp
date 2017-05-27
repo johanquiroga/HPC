@@ -152,11 +152,13 @@ int main(int argc, char** argv)
 			int j = 1;
 			while (j <= nworkers) {
 				// send
+				std::cout << "more files than workers" << std::endl;
 				std::string op = "work";
 				std::string tmp = files.back();
 				std::cout << "worker: " << j << std::endl;
 				std::cout << "File: " << tmp << std::endl;
-				MPI_CHECK(MPI_Send(op.c_str(), op.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(op.c_str(), op.length(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				std::cout << "op message sended" << std::endl;
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size(), MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
@@ -204,6 +206,7 @@ int main(int argc, char** argv)
 			}
 		} else {
 			int i = 0;
+			std::cout << "more workers than files"  << std::endl;
 			while (i < files.size()) {
 				// send to i+1
 				std::string op = "work";
