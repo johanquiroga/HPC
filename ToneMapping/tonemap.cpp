@@ -142,11 +142,11 @@ int main(int argc, char** argv)
 
 		std::vector<std::string> files;
 		read_files(files, images_path);
-		std::cout << "f_stop: " << f_stop << std::endl;
-		std::cout << "gamma: " << gamma << std::endl;
-		std::cout << "images_path: " << images_path << std::endl;
-		std::cout << "dst_path: " << dst_path << std::endl;
-		std::cout << "size: " << files.size() << std::endl;
+//		std::cout << "f_stop: " << f_stop << std::endl;
+//		std::cout << "gamma: " << gamma << std::endl;
+//		std::cout << "images_path: " << images_path << std::endl;
+//		std::cout << "dst_path: " << dst_path << std::endl;
+//		std::cout << "size: " << files.size() << std::endl;
 
 		if (files.size() >= nworkers) {
 			int j = 1;
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 				std::string op("work");
 				std::string tmp = files.back();
 //				std::cout << "worker: " << j << std::endl;
-//				std::cout << "File: " << tmp << std::endl;
+				std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.length()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 //				std::cout << "op message sended" << std::endl;
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 				// receive
 				int workerid;
 				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
-				std::cout << "Finished: worker: " << workerid << std::endl;
+//				std::cout << "Finished: worker: " << workerid << std::endl;
 				int tmpid = workerid;
 
 				if (!files.empty()) {
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 					std::string op = "work";
 					std::string tmp = files.back();
 //					std::cout << "worker: " << tmpid << std::endl;
-//					std::cout << "File: " << tmp << std::endl;
+					std::cout << "Process \"" << taskid << "\" sending file \"" << tmp << " to: " << tmpid << std::endl;
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
@@ -205,8 +205,9 @@ int main(int argc, char** argv)
 			while (j <= nworkers) {
 				// send finish
 				std::string op = "finish";
-				std::cout << "worker: " << j << std::endl;
-				std::cout << "Terminate" << std::endl;
+//				std::cout << "worker: " << j << std::endl;
+//				std::cout << "Terminate" << std::endl;
+				std::cout << "Process \"" << taskid << "\" sending op \"" << op << " to: " << j << std::endl;
 				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				j++;
 			}
