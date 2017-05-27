@@ -353,7 +353,7 @@ int main(int argc, char** argv)
 			// Now receive the message with the allocated buffer
 			MPI_CHECK(MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "op: " << op << std::strlen(op) << " " << length_op << std::endl;
+			std::cout << "op: " << op << std::endl;
 
 			if(strcmp(op,"finish") == 0) {
 				free(op);
@@ -386,8 +386,8 @@ int main(int argc, char** argv)
 			MPI_CHECK(MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 			MPI_CHECK(MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
-			std::cout << "Process \"" << taskid << "\" received file \"" << file_name << "\" and settings: " <<
-					  images_path << ", " << dst_path << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
+			std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" and settings: " <<
+			          std::string(images_path) << ", " << std::string(dst_path) << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
 
 			//task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
 
