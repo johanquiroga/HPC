@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 	int show_flag;
 //	std::vector<Mat>images;
 
-	printf("%s\n", image_name);
+//	printf("%s\n", image_name);
 	hdr = imread(image_name, -1);
 	if(argc !=6 || !hdr.data) {
 		printf("No image Data \n");
@@ -177,13 +177,17 @@ int main(int argc, char** argv)
 
 	//printf("Width: %d\nHeight: %d\n", width, height);
 	std::string ty =  type2str( hdr.type() );
-	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
+//	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
 
 	//printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
 	h_ImageData = (float *) malloc (sizeImage);
 	h_ImageData = (float *)hdr.data;
 	h_ImageOut = (float *) malloc (sizeImage);
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	float milliseconds = 0;
 
 	checkError(cudaMalloc((void **)&d_ImageData, sizeImage));
 	checkError(cudaMalloc((void **)&d_ImageOut, sizeImage));
@@ -192,7 +196,10 @@ int main(int argc, char** argv)
 	int blockSize = 32;
 	dim3 dimBlock(blockSize, blockSize, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
+	cudaEventRecord(start);
 	tonemap<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, 32, f_stop, gamma);
+	cudaEventRecord(stop);
+	printf("%s|%.10f\n", image_name, milliseconds/1000.0);
 	cudaDeviceSynchronize();
 
 	checkError(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
@@ -203,7 +210,7 @@ int main(int argc, char** argv)
 	imwrite(image_out_name, ldr);
 
     ty =  type2str( ldr.type() );
-    printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
+//    printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
