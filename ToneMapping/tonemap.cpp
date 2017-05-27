@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <mpi.h>
 //#include <dirent.h>
