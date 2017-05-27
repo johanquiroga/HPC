@@ -5,7 +5,10 @@
 #SBATCH --ntasks=3
 #SBATCH --gres=gpu:1
 
-mpirun build/tonemapping 0.4 1.2 images results ,
+echo "imagen|tiempo|id worker"
+echo ":---:|:---:|:---:"
+
+mpirun build/tonemapping 0.4 1.2 images results |
 
 #for i in {1..5}
 #do
