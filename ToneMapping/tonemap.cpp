@@ -409,6 +409,8 @@ int main(int argc, char** argv)
 		}
 	}
 
+	std::cout << "Finishing up..." << std::endl;
 	MPI_CHECK(MPI_Finalize());
+	std::cout << "Finished" << std::endl;
 	return 0;
 }
