@@ -150,9 +150,9 @@ int main(int argc, char** argv)
 
 		if (files.size() >= nworkers) {
 			int j = 1;
+			std::cout << "more files than workers" << std::endl;
 			while (j <= nworkers) {
 				// send
-				std::cout << "more files than workers" << std::endl;
 				std::string op("work");
 				std::string tmp = files.back();
 				std::cout << "worker: " << j << std::endl;
@@ -308,6 +308,8 @@ int main(int argc, char** argv)
 			op = (char*)malloc(sizeof(char) * length_op);
 			// Now receive the message with the allocated buffer
 			MPI_CHECK(MPI_Recv(op, length_op, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+
+			std::cout << "op: " << op << std::endl;
 
 			if(op == "finish") {
 				free(op);
