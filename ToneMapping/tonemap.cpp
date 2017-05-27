@@ -295,7 +295,7 @@ int main(int argc, char** argv)
 
 			MPI_CHECK(MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD));
 //			MPI_CHECK(MPI_Send(&elapsed_time, 1, MPI_FLOAT, 0, FROM_WORKER, MPI_COMM_WORLD));
-			MPI_CHECK(MPI_Send(file_name, std::strlen(file_name)+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+			MPI_CHECK(MPI_Send(file_name, std::strlen(file_name)+1, MPI_CHAR, 0, FROM_WORKER, MPI_COMM_WORLD));
 
 			free(images_path); free(dst_path); free(file_name);
 			// receive op
