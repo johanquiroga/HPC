@@ -179,8 +179,9 @@ int main(int argc, char** argv)
 				}
 				// receive
 				int workerid;
-				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, tmpid, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 				std::cout << "Finished: worker: " << tmpid << " workerid: " << workerid << std::endl;
+				tmpid = workerid;
 				if (!files.empty()) {
 					// send
 					std::string op = "work";
