@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));*/
 				}
 			}
-			int j = 1;
+			j = 1;
 			while (j <= nworkers) {
 				// send finish
 				std::string op = "finish";
