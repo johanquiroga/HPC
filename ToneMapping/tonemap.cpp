@@ -170,7 +170,47 @@ int main(int argc, char** argv)
 			}
 			j = 1;
 			int count = nworkers;
-			while (j <= count) {
+			while(true) {
+				// receive
+				int workerid;
+				MPI_CHECK(MPI_Recv(&workerid, 1, MPI_INT, MPI_ANY_SOURCE, FROM_WORKER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+				std::cout << "Finished: worker: " << tmpid << " workerid: " << workerid << std::endl;
+				tmpid = workerid;
+
+				if (!files.empty()) {
+					// send
+					std::string op = "work";
+					std::string tmp = files.back();
+//					std::cout << "worker: " << tmpid << std::endl;
+//					std::cout << "File: " << tmp << std::endl;
+					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					files.pop_back();
+					count++;
+				} else {
+					// finish
+					break;
+					/*std::string op = "finish";
+					std::cout << "worker: " << tmpid << std::endl;
+					std::cout << "Terminate" << std::endl;
+					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));*/
+				}
+			}
+			int j = 1;
+			while (j <= nworkers) {
+				// send finish
+				std::string op = "finish";
+				std::cout << "worker: " << j << "workerid: " << workerid << std::endl;
+				std::cout << "Terminate" << std::endl;
+				MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				j++;
+			}
+			/*while (j <= count) {
 				int tmpid;
 				if(j > nworkers) {
 					tmpid = j - nworkers;
@@ -205,7 +245,7 @@ int main(int argc, char** argv)
 					MPI_CHECK(MPI_Send(op.c_str(), op.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 				}
 				j++;
-			}
+			}*/
 		} else {
 			int i = 0;
 			std::cout << "more workers than files"  << std::endl;
