@@ -20,5 +20,5 @@ cuda_matrix_mult
 *.nvvp
 *.o
 tonemapping
-*/results
-*/images
+results
+images
