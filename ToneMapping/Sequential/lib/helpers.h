@@ -89,7 +89,7 @@ float tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = gamma_correction(h_ImageData[(i * width + j) * channels + k]);
+				h_ImageOut[(i * width + j) * channels + k] = gamma_correction(f_stop, gamma, h_ImageData[(i * width + j) * channels + k]);
 			}
 		}
 		

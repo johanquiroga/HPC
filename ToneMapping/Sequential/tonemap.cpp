@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	start = clock();
 	while(!files.empty()) {
 		float elapsed_time = 0.0;
-		std::string file_name = files.bak();
+		std::string file_name = files.back();
 		elapsed_time = task(file_name, f_stop, gamma, images_path, dst_path);
 		printTime(file_name, elapsed_time, separator);
 		files.pop_back();
