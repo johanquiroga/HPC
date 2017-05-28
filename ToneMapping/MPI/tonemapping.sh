@@ -8,7 +8,7 @@
 echo "imagen|tiempo|id worker"
 echo ":---:|:---:|:---:"
 
-mpirun build/tonemapping 0.4 1.2 images results \|
+mpirun build/tonemapping 0.4 1.2 ../images results \|
 
 #for i in {1..5}
 #do
