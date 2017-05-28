@@ -9,7 +9,7 @@
 echo "imagen,tiempo"
 echo ":---:|:---:"
 
-for i in {1..11}
+for i in {1..13}
 do
 	./test images/test$i.exr 0.4 1.2 0 results/test$i.png
 	#echo "**Image**: img$i.jpg"
