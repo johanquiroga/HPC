@@ -11,7 +11,7 @@ echo ":---:|:---:"
 
 for i in {1..20}
 do
-	srun test ../images/test$i.exr 0.4 1.2 0 results/test$i.png
+	srun ./test ../images/test$i.exr 0.4 1.2 0 results/test$i.png
 	#echo "**Image**: img$i.jpg"
 	#echo
 	#echo "iteracion|Host|OpenCV|aceleracion Host-OCV|OpenCVGPU|aceleracion OCV-OCVGPU|Cuda|aceleracion OCV-Cuda|aceleracion OCVGPU-Cuda"
