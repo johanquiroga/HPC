@@ -20,3 +20,4 @@ imagen|tiempo
 ../images/test18.exr|0.0034629760
 ../images/test19.exr|0.0034597759
 ../images/test20.exr|0.0022017601
+batch time|16
