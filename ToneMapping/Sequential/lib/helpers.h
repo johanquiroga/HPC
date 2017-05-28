@@ -1,15 +1,13 @@
 #ifndef HPC_HELPERS_H
 #define HPC_HELPERS_H
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
+//#include <iostream>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string>
 #include <dirent.h>
-#include <time.h>
+//#include <time.h>
 #include <math.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 
