@@ -20,4 +20,6 @@ cuda_matrix_mult
 *.nvvp
 images
 results
+test
+tonemap
 */Sequential/testsHDR
