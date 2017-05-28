@@ -23,3 +23,6 @@ results
 test
 tonemap
 */Sequential/testsHDR
+*.o
+tonemapping
+
