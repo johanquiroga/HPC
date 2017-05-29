@@ -13,7 +13,7 @@ __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsign
 	unsigned int offset = 0;
 //	const int size = blockSize;
 
-	__shared__ float cache[256];
+	extern	__shared__ float cache[];
 
 
 	float temp = -1.0;
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	int blockSize = 256;
 	dim3 dimBlock(blockSize, 1, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), 1, 1);
-	find_maximum_kernel<<< dimGrid, dimBlock >>>(d_ImageData, d_max, d_mutex, N, blockSize);
+	find_maximum_kernel<<< dimGrid, dimBlock, sizeof(float)*blockSize >>>(d_ImageData, d_max, d_mutex, N, blockSize);
 
 	cudaMemcpy(h_max, d_max, sizeof(float), cudaMemcpyDeviceToHost);
 	printf("Maximum number found on gpu was: %f\n", *h_max);
