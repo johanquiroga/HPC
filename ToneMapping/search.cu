@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <cuda.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 
 using namespace cv;
 
@@ -9,8 +11,9 @@ __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsign
 	unsigned int index = threadIdx.x + blockIdx.x*blockDim.x;
 	unsigned int stride = gridDim.x*blockDim.x;
 	unsigned int offset = 0;
+//	const int size = blockSize;
 
-	__shared__ float cache[blockSize];
+	__shared__ float cache[256];
 
 
 	float temp = -1.0;
