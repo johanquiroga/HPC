@@ -221,7 +221,7 @@ int main(int argc, char** argv)
 	}
 
 	cvtColor(hdr, gray_hdr, CV_BGR2GRAY);
-	normalize(gray_hdr, gray_hdr, 0.0, 1.0, NORM_MINMAX, CV_32FC1);
+//	normalize(gray_hdr, gray_hdr, 0.0, 1.0, NORM_MINMAX, CV_32FC1);
 
 	imageSize = gray_hdr.size();
 	width = imageSize.width;
