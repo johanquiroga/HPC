@@ -163,20 +163,20 @@ __device__ float gamma_correction(float f_stop, float gamma, float val)
 	return powf((val*powf(2,f_stop)),(1.0/gamma));
 }
 
-__device__ float logarithmic_mapping(float lw_max, float ld_max, float lw, int b)
+__device__ float logarithmic_mapping(float lw_max, float ld_max, float lw, float b)
 {
-	ld = (ld_max)/(100*log10f(1+lw_max)*((log10f(1+lw))/(log10f(2+8*powf((lw/lw_max),(log10f(b)/log10f(0.5)))))));
+	float ld = (ld_max)/(100*log10f(1+lw_max)*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5)))))));
 	return ld;
 }
 
 __global__ void tonemap(float* imageIn, float* imageOut, int width, int height, int channels, int depth, float f_stop,
-						float gamma, float* max, int b)
+						float gamma, float* max, float b)
 {
 	int Row = blockDim.y * blockIdx.y + threadIdx.y;
 	int Col = blockDim.x * blockIdx.x + threadIdx.x;
 
 	if(Row < height && Col < width) {
-		imageOut[Row*width+Col] =  logarithmic_mapping(*max, 255.0, imageIn[Row*width+Col], b);
+		imageOut[Row*width+Col] =  logarithmic_mapping(*max, 100.0, imageIn[Row*width+Col], b);
 //		imageOut[(Row*width+Col)*3+BLUE] = gamma_correction(f_stop, gamma, imageIn[(Row*width+Col)*3+BLUE]);
 //		imageOut[(Row*width+Col)*3+GREEN] = gamma_correction(f_stop, gamma, imageIn[(Row*width+Col)*3+GREEN]);
 //		imageOut[(Row*width+Col)*3+RED] = gamma_correction(f_stop, gamma, imageIn[(Row*width+Col)*3+RED]);
@@ -196,9 +196,9 @@ int main(int argc, char** argv)
 	int *d_mutex, N;
 	Mat hdr, ldr, gray_hdr;
 	Size imageSize;
-	int width, height, channels, sizeImage, b;
-//	float f_stop=0.0, gamma=0.0;
-//	int show_flag;
+	int width, height, channels, sizeImage;
+	float f_stop=0.0, gamma=0.0, b;
+	int show_flag = 0;
 //	std::vector<Mat>images;
 
 //	printf("%s\n", image_name);
@@ -210,7 +210,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	b = atoi(argv[2]);
+	b = atof(argv[2]);
 //	f_stop = atof(argv[2]);
 //	gamma = atof(argv[3]);
 //	show_flag = atoi(argv[4]);
@@ -221,6 +221,7 @@ int main(int argc, char** argv)
 	}
 
 	cvtColor(hdr, gray_hdr, CV_BGR2GRAY);
+	normalize(gray_hdr, gray_hdr, 0.0, 1.0, NORM_MINMAX, CV_32FC1);
 
 	imageSize = gray_hdr.size();
 	width = imageSize.width;
@@ -230,8 +231,8 @@ int main(int argc, char** argv)
 	sizeImage = sizeof(float)*width*height*channels;
 
 	//printf("Width: %d\nHeight: %d\n", width, height);
-	std::string ty =  type2str( hdr.type() );
-//	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
+	std::string ty =  type2str( gray_hdr.type() );
+	printf("Image: %s %dx%d \n", ty.c_str(), hdr.cols, hdr.rows );
 
 	//printf("Channels: %d\nDepth: %d\n", hdr.channels(), hdr.depth());
 
@@ -261,10 +262,10 @@ int main(int argc, char** argv)
 	//cudaMemcpy(h_max, d_max, sizeof(float), cudaMemcpyDeviceToHost);
 
 	blockSize = 32;
-	dimBlock(blockSize, blockSize, 1);
-	dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
+	dim3 dimBlock2(blockSize, blockSize, 1);
+	dim3 dimGrid2(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
 	cudaEventRecord(start);
-	tonemap<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, 32, f_stop, gamma, d_max, b);
+	tonemap<<<dimGrid2, dimBlock2>>>(d_ImageData, d_ImageOut, width, height, channels, 32, f_stop, gamma, d_max, b);
 	cudaEventRecord(stop);
 	cudaDeviceSynchronize();
 	cudaEventElapsedTime(&milliseconds, start, stop);
@@ -272,14 +273,14 @@ int main(int argc, char** argv)
 
 	checkError(cudaMemcpy(h_ImageOut, d_ImageOut, sizeImage, cudaMemcpyDeviceToHost));
 
-	ldr.create(height, width, CV_32FC3);
+	ldr.create(height, width, CV_32FC1);
 	ldr.data = (unsigned char *)h_ImageOut;
-	ldr.convertTo(ldr, CV_8UC1, 255);
-	cvtColor(ldr, ldr, CV_GRAY2BGR);
+	ldr.convertTo(ldr, CV_8UC1, 1);
+	//cvtColor(ldr, ldr, CV_GRAY2BGR);
 	imwrite(image_out_name, ldr);
 
     ty =  type2str( ldr.type() );
-//    printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
+    printf("Image result: %s %dx%d \n", ty.c_str(), ldr.cols, ldr.rows );
 
 	if(show_flag) {
 		showImage(ldr, "Image out LDR");
