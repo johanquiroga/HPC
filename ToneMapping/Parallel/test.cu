@@ -24,6 +24,12 @@ using namespace cv;
 //	}
 //}
 
+void my_abort(int err)
+{
+	std::cout << "Program FAILED\n";
+    exit(err);
+}
+
 float task(std::string image_name, std::string images_path, std::string dst_path, std::string tmo, int blockSize,
            float f_stop, float gamma, float q, float k, float b)
 {
