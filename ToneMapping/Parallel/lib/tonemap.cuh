@@ -8,7 +8,7 @@
     if((call) != cudaSuccess) { \
         cudaError_t err = cudaGetLastError(); \
         std::cerr << "CUDA error calling \""#call"\", code is " << err << std::endl; \
-        my_abort(err); }
+        exit(err); }
 
 __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n)
 {
