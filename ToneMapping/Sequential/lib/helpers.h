@@ -76,7 +76,7 @@ void printTime(std::string file_name, float time, std::string separator)
 
 float gamma_correction(float f_stop, float gamma, float val)
 {
-	return powf((val*powf(2, f_stop)), (1.0/gamma));
+	return powf((val*powf(2.0, f_stop)), (1.0/gamma));
 }
 
 float find_max(float* array, int N)
@@ -114,7 +114,7 @@ float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height
 
 float logarithmic_mapping(float k, float q, float val_pixel, float maxLum)
 {
-	return (log10(1 + q * val_pixel))/(log10(1 + k * maxLum));
+	return (log10f(1.0 + q * val_pixel))/(log10f(1.0 + k * maxLum));
 }
 
 float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float k, float q, int sizeImage)
@@ -144,7 +144,7 @@ float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, 
 
 float adaptive_logarithmic_mapping(float lw_max, float ld_max, float lw, float b)
 {
-	float ld = ((ld_max)/(100*log10f(1+lw_max)))*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5))))));
+	float ld = ((ld_max)/(100.0*log10f(1.0+lw_max)))*((logf(1.0+lw))/(logf(2.0+8.0*powf((lw/lw_max),(logf(b)/logf(0.5))))));
 	return ld;
 }
 
