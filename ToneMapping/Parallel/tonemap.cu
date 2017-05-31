@@ -72,10 +72,10 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 
 void Usage()
 {
-	printf("Usage: ./tonemap <images_src> <results_dst> <output_separator> <TMO>(log/gamma)\n");
+	printf("Usage: ./tonemap <images_src> <results_dst> <output_separator> <TMO>(log/gamma/adap_log)\n");
 	printf("If TMO = log, add: <k> <q>\n");
 	printf("If TMO = gamma, add: <gamma> <f_stop>\n");
-//	printf("If TMO = adap_log, add: <b>\n");
+	printf("If TMO = adap_log, add: <b>\n");
 }
 
 int main(int argc, char** argv)

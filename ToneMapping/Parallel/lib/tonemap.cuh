@@ -61,7 +61,7 @@ __device__ float gamma_correction(float f_stop, float gamma, float val)
 
 __device__ float adaptive_logarithmic_mapping(float lw_max, float ld_max, float lw, float b)
 {
-	float ld = (ld_max)/(100*log10f(1+lw_max)*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5)))))));
+	float ld = ((ld_max)/(100*log10f(1+lw_max)))*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5))))));
 	return ld;
 }
 
