@@ -18,8 +18,8 @@ for tmo in "gamma" "log" "adap_log"
 do
 	echo "**Operador: $tmo**"
 	echo
-	echo "imagen|tiempo"
-	echo ":---:|:---:"
+	echo "imagen|tiempo|id worker"
+	echo ":---:|:---:|:---:"
 	if [ "${tmo}" == "gamma" ]; then
 #		echo "${tmo}"
 		mpirun build/tonemapping ../images results/results_$tmo \| $tmo 1.2 0.4 #gamma
