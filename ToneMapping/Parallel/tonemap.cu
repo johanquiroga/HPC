@@ -18,7 +18,7 @@
 using namespace cv;
 
 float task(std::string image_name, std::string images_path, std::string dst_path, std::string tmo, int blockSize,
-           float f_stop, float gamma, float q, float k, float b)
+           float f_stop, float gamma, float q, float k, float b, float ld_max)
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
@@ -56,7 +56,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 		elapsed_time = gamma_tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, blockSize,
 		                             sizeImage);
 	} else {
-		elapsed_time = adaptive_log_tonemap(h_ImageData, h_ImageOut, width, height, channels, b, blockSize, sizeImage);
+		elapsed_time = adaptive_log_tonemap(h_ImageData, h_ImageOut, width, height, channels, b, ld_max, blockSize, sizeImage);
 	}
 
 	ldr.create(height, width, CV_32FC3);
@@ -75,12 +75,12 @@ void Usage()
 	printf("Usage: ./tonemap <images_src> <results_dst> <output_separator> <TMO>(log/gamma/adap_log)\n");
 	printf("If TMO = log, add: <k> <q>\n");
 	printf("If TMO = gamma, add: <gamma> <f_stop>\n");
-	printf("If TMO = adap_log, add: <b>\n");
+	printf("If TMO = adap_log, add: <b> <ld_max>\n");
 }
 
 int main(int argc, char** argv)
 {
-	float f_stop=0.0, gamma=0.0, q=0.0, k=0.0, b=1.0;
+	float f_stop=0.0, gamma=0.0, q=0.0, k=0.0, b=1.0, ld_max=0.0;
 
 	if(argc == 1 || argc < 5) {
 		Usage();
@@ -106,11 +106,12 @@ int main(int argc, char** argv)
 		gamma = atof(argv[5]);
 		f_stop = atof(argv[6]);
 	} else if(tmo == "adap_log") {
-		if(argc != 6) {
+		if(argc != 7) {
 			Usage();
 			return EXIT_FAILURE;
 		}
 		b = atof(argv[5]);
+		ld_max = atof(argv[6]);
 	} else {
 		Usage();
 		return EXIT_FAILURE;
@@ -126,7 +127,7 @@ int main(int argc, char** argv)
 	while(!files.empty()) {
 		float elapsed_time = 0.0;
 		std::string file_name = files.back();
-		elapsed_time = task(file_name, images_path, dst_path, tmo, blockSize, f_stop, gamma, q, k, b);
+		elapsed_time = task(file_name, images_path, dst_path, tmo, blockSize, f_stop, gamma, q, k, b, ld_max);
 		printTime(file_name, elapsed_time, separator);
 		files.pop_back();
 	}

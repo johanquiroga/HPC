@@ -92,14 +92,14 @@ __global__ void log_tonemap_kernel(float* imageIn, float* imageOut, int width, i
 }
 
 __global__ void adaptive_log_tonemap_kernel(float* imageIn, float* imageOut, int width, int height, int channels, float b,
-                                            float* max)
+                                            float ld_max, float* max)
 {
 	int Row = blockDim.y * blockIdx.y + threadIdx.y;
 	int Col = blockDim.x * blockIdx.x + threadIdx.x;
 
 	if(Row < height && Col < width) {
 		for(int i=0; i<channels; i++) {
-			imageOut[(Row*width+Col)*channels+i] =  adaptive_logarithmic_mapping(*max, 100.0, imageIn[(Row*width+Col)*channels+i], b);
+			imageOut[(Row*width+Col)*channels+i] =  adaptive_logarithmic_mapping(*max, ld_max, imageIn[(Row*width+Col)*channels+i], b);
 		}
 	}
 }
@@ -183,7 +183,7 @@ float gamma_tonemap(float *h_ImageData, float *h_ImageOut, int width, int height
 	return milliseconds/1000.0;
 }
 
-float adaptive_log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float b, int blockSize,
+float adaptive_log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, int channels, float b, float ld_max, int blockSize,
                            int sizeImage)
 {
 	cudaEvent_t start, stop;
@@ -213,7 +213,7 @@ float adaptive_log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int
 
 	dim3 dimBlock(blockSize, blockSize, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), ceil(height/float(blockSize)), 1);
-	adaptive_log_tonemap_kernel<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, b, d_max);
+	adaptive_log_tonemap_kernel<<<dimGrid, dimBlock>>>(d_ImageData, d_ImageOut, width, height, channels, b, ld_max, d_max);
 	cudaDeviceSynchronize();
 
 	cudaEventRecord(stop);
