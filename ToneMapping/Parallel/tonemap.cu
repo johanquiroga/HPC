@@ -22,7 +22,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
-	Mat hdr, ldr;
+	Mat hdr, ldr, gray;
 	int width, height, channels, sizeImage;
 
 	std::string path = images_path + "/" + image_name;
@@ -41,14 +41,14 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 //        return -1;
 	}
 
-	cvtColor(hdr, hdr, CV_BGR2GRAY);
+	cvtColor(hdr, gray, CV_BGR2GRAY);
 
-	width = hdr.cols;
-	height = hdr.rows;
-	channels = hdr.channels();
+	width = gray.cols;
+	height = gray.rows;
+	channels = gray.channels();
 	sizeImage = sizeof(float)*width*height*channels;
 
-	h_ImageData = (float *)hdr.data;
+	h_ImageData = (float *)gray.data;
 	h_ImageOut = (float *) malloc (sizeImage);
 	float elapsed_time = 0.0;
 
