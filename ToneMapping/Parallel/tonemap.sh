@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
 
-TMO = "gamma"
+TMO="gamma"
 
 echo "imagen|tiempo"
 echo ":---:|:---:"
