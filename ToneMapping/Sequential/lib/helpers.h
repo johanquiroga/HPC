@@ -79,7 +79,7 @@ float gamma_correction(float f_stop, float gamma, float val)
 	return powf((val*powf(2, f_stop)), (1.0/gamma));
 }
 
-float tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int sizeImage)
+float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int sizeImage)
 {
 	clock_t start, end;
 	double elapsed_time;
@@ -93,6 +93,77 @@ float tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int 
 		}
 		
 	}
+	end = clock();
+
+	elapsed_time = ((double)(end - start))/CLOCKS_PER_SEC;
+	return elapsed_time;
+}
+
+float logarithmic_mapping(float k, float q, float val_pixel, float maxLum)
+{
+	return (log10(1 + q * val_pixel))/(log10(1 + k * maxLum));
+}
+
+float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float k, float q, int sizeImage)
+{
+	clock_t start, end;
+	double elapsed_time;
+	int N = sizeImage/sizeof(float);
+
+	start = clock();
+
+	int* h_max = -1.0;
+	for(unsigned int i=0;i<N;i++){
+		if(h_ImageData[i] > *h_max){
+			*h_max = h_ImageData[i];
+		}
+	}
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			for (int k = 0; k < channels; k++) {
+				h_ImageOut[(i * width + j) * channels + k] = logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], *h_max);
+			}
+		}
+
+	}
+
+	end = clock();
+
+	elapsed_time = ((double)(end - start))/CLOCKS_PER_SEC;
+	return elapsed_time;
+}
+
+float adaptive_logarithmic_mapping(float lw_max, float ld_max, float lw, float b)
+{
+	float ld = ((ld_max)/(100*log10f(1+lw_max)))*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5))))));
+	return ld;
+}
+
+float adaptive_log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float b, float ld_max, int sizeImage)
+{
+	clock_t start, end;
+	double elapsed_time;
+	int N = sizeImage/sizeof(float);
+
+	start = clock();
+
+	int* h_max = -1.0;
+	for(unsigned int i=0;i<N;i++){
+		if(h_ImageData[i] > *h_max){
+			*h_max = h_ImageData[i];
+		}
+	}
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			for (int k = 0; k < channels; k++) {
+				h_ImageOut[(i * width + j) * channels + k] = adaptive_logarithmic_mapping(*h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
+			}
+		}
+
+	}
+
 	end = clock();
 
 	elapsed_time = ((double)(end - start))/CLOCKS_PER_SEC;
