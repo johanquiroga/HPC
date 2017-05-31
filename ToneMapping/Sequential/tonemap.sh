@@ -19,13 +19,13 @@ do
 	echo
 	echo "imagen|tiempo"
 	echo ":---:|:---:"
-	if ["${tmo}" == "gamma"]; then
+	if [ "${tmo}" == "gamma" ]; then
 		echo "${tmo}"
 	    #srun tonemap ../images results/results_$tmo \| $tmo 1.2 0.4 #gamma
-	elif ["${tmo}" == "log"]; then
+	elif [ "${tmo}" == "log" ]; then
 	    echo "${tmo}"
 	    #srun tonemap ../images results/results_$tmo \| $tmo 1 1 #log
-	elif ["${tmo}" == "adap_log"]; then
+	elif [ "${tmo}" == "adap_log" ]; then
 		echo "${tmo}"
 		#srun tonemap ../images results/results_$tmo \| $tmo 1 150 #adap_log
 	fi
