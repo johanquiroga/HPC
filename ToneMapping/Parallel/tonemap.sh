@@ -5,11 +5,11 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
 
-TMO="log"
+TMO="adap_log"
 
 echo "imagen|tiempo"
 echo ":---:|:---:"
 
 #srun tonemap ../images results/results_$TMO \| $TMO 1.2 0.4 #gamma
-srun tonemap ../images results/results_$TMO \| $TMO 1 1 #log
-#srun tonemap ../images results/results_$TMO \| $TMO 1 #adap_log
+#srun tonemap ../images results/results_$TMO \| $TMO 1 1 #log
+srun tonemap ../images results/results_$TMO \| $TMO 1 150 #adap_log
