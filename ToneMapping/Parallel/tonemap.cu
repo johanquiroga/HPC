@@ -41,6 +41,8 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 //        return -1;
 	}
 
+	cvtColor(hdr, hdr, CV_BGR2GRAY);
+
 	width = hdr.cols;
 	height = hdr.rows;
 	channels = hdr.channels();
