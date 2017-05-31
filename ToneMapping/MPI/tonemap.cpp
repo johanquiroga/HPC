@@ -39,7 +39,6 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
 	Mat hdr, ldr;
-	Size imageSize;
 	int width, height, channels, sizeImage;
 
 	std::string path = images_path + "/" + image_name;
@@ -357,7 +356,7 @@ int main(int argc, char** argv)
 			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_tmo));
 			MPI_CHECK(MPI_Get_count(&status_tmo, MPI_CHAR, &length_tmo));
 			tmo = (char*)malloc(sizeof(char) * length_tmo);
-			MPI_CHECK(MPI_Recv(file_name, length_tmo, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(tmo, length_tmo, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 			MPI_CHECK(MPI_Recv(&f_stop, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 			MPI_CHECK(MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
