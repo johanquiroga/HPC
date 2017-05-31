@@ -1,27 +1,14 @@
 #!/bin/bash
 #
-#SBATCH --job-name=test_tone_mapping
-#SBATCH --output=res_mpi_tone_mapping.md
+#SBATCH --job-name=tone_mapping
 #SBATCH --ntasks=3
 #SBATCH --gres=gpu:1
+
+TMO="gamma"
 
 echo "imagen|tiempo|id worker"
 echo ":---:|:---:|:---:"
 
-mpirun build/tonemapping 0.4 1.2 ../images results \|
-
-#for i in {1..5}
-#do
-	#echo "**Image**: img$i.jpg"
-	#echo
-	#echo "iteracion|Host|OpenCV|aceleracion Host-OCV|OpenCVGPU|aceleracion OCV-OCVGPU|Cuda|aceleracion OCV-Cuda|aceleracion OCVGPU-Cuda"
-	#echo ":---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:"
-#	for run in {1..20}
-#	do
-		#argv=$((run*100))
-		#echo -n "$run|"
-#		mpirun ./build/tonemapping 0.4 1.2 ./images ./results
-#	done
-	#echo "Promedios:| | | | | | | | "
-	#echo
-#done
+mpirun build/tonemapping ../images results/results_$TMO \| $TMO 1.2 0.4 #gamma
+#mpirun build/tonemapping ../images results/results_$TMO \| $TMO 1 1 #log
+#mpirun build/tonemapping ../images results/results_$TMO \| $TMO 1 150 #adap_log
