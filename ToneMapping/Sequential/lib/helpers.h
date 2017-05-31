@@ -112,7 +112,8 @@ float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, 
 
 	start = clock();
 
-	float* h_max = -1.0;
+	float* h_max = NULL;
+	h_max = -1.0;
 	for(unsigned int i=0;i<N;i++){
 		if(h_ImageData[i] > *h_max){
 			*h_max = h_ImageData[i];
@@ -148,7 +149,8 @@ float adaptive_log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int
 
 	start = clock();
 
-	float* h_max = -1.0;
+	float* h_max = NULL;
+	h_max = -1.0;
 	for(unsigned int i=0;i<N;i++){
 		if(h_ImageData[i] > *h_max){
 			*h_max = h_ImageData[i];
