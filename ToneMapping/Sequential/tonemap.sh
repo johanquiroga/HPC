@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 #SBATCH --job-name=tone_mapping
+#SBATCH --output=res_tonemapping_serial.md
 #SBATCH --tasks=1
 #SBATCH --nodes=1
 
@@ -20,14 +21,14 @@ do
 	echo "imagen|tiempo"
 	echo ":---:|:---:"
 	if [ "${tmo}" == "gamma" ]; then
-		echo "${tmo}"
-	    #srun tonemap ../images results/results_$tmo \| $tmo 1.2 0.4 #gamma
+		#echo "${tmo}"
+		srun tonemap ../images results/results_$tmo \| $tmo 1.2 0.4 #gamma
 	elif [ "${tmo}" == "log" ]; then
-	    echo "${tmo}"
-	    #srun tonemap ../images results/results_$tmo \| $tmo 1 1 #log
+		#echo "${tmo}"
+		srun tonemap ../images results/results_$tmo \| $tmo 1 1 #log
 	elif [ "${tmo}" == "adap_log" ]; then
-		echo "${tmo}"
-		#srun tonemap ../images results/results_$tmo \| $tmo 1 150 #adap_log
+		#echo "${tmo}"
+		srun tonemap ../images results/results_$tmo \| $tmo 1 150 #adap_log
 	fi
 	echo
 done
