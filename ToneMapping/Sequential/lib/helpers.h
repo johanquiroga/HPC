@@ -79,6 +79,19 @@ float gamma_correction(float f_stop, float gamma, float val)
 	return powf((val*powf(2, f_stop)), (1.0/gamma));
 }
 
+float find_max(float* array, int N)
+{
+	float h_max = -1.0;
+
+	for(unsigned int i=0;i<N;i++){
+		if(array[i] > h_max){
+			h_max = array[i];
+		}
+	}
+
+	return h_max;
+}
+
 float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int sizeImage)
 {
 	clock_t start, end;
@@ -112,18 +125,12 @@ float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, 
 
 	start = clock();
 
-	float* h_max = NULL;
-	*h_max = -1.0;
-	for(unsigned int i=0;i<N;i++){
-		if(h_ImageData[i] > *h_max){
-			*h_max = h_ImageData[i];
-		}
-	}
+	float h_max = find_max(h_ImageData, N);
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], *h_max);
+				h_ImageOut[(i * width + j) * channels + k] = logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], h_max);
 			}
 		}
 
@@ -149,18 +156,12 @@ float adaptive_log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int
 
 	start = clock();
 
-	float* h_max = NULL;
-	*h_max = -1.0;
-	for(unsigned int i=0;i<N;i++){
-		if(h_ImageData[i] > *h_max){
-			*h_max = h_ImageData[i];
-		}
-	}
+	float h_max = find_max(h_ImageData, N);
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = adaptive_logarithmic_mapping(*h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
+				h_ImageOut[(i * width + j) * channels + k] = adaptive_logarithmic_mapping(h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
 			}
 		}
 
