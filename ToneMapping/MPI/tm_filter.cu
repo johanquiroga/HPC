@@ -52,17 +52,17 @@ __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsign
 }
 
 __device__ float logarithmic_mapping(float k, float q, float val_pixel, float maxLum){
-    return (log10(1 + q * val_pixel))/(log10(1 + k * maxLum));
+    return (log10f(1.0 + q * val_pixel))/(log10f(1.0 + k * maxLum));
 }
 
 __device__ float gamma_correction(float f_stop, float gamma, float val)
 {
-    return powf((val*powf(2,f_stop)),(1.0/gamma));
+    return powf((val*powf(2.0,f_stop)),(1.0/gamma));
 }
 
 __device__ float adaptive_logarithmic_mapping(float lw_max, float ld_max, float lw, float b)
 {
-    float ld = ((ld_max)/(100*log10f(1+lw_max)))*((logf(1+lw))/(logf(2+8*powf((lw/lw_max),(logf(b)/logf(0.5))))));
+    float ld = ((ld_max)/(100.0*log10f(1.0+lw_max)))*((logf(1.0+lw))/(logf(2.0+8.0*powf((lw/lw_max),(logf(b)/logf(0.5))))));
     return ld;
 }
 
