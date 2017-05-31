@@ -33,7 +33,8 @@ void my_abort(int err)
 //    exit(err);
 }
 
-float task(std::string image_name, float f_stop, float gamma, int block_size, std::string images_path, std::string dst_path)
+float task(std::string image_name, std::string images_path, std::string dst_path, std::string tmo, int blockSize,
+           float f_stop, float gamma, float q, float k, float b, float ld_max)
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
@@ -62,11 +63,18 @@ float task(std::string image_name, float f_stop, float gamma, int block_size, st
 	channels = hdr.channels();
 	sizeImage = sizeof(float)*width*height*channels;
 
-	h_ImageData = (float *) malloc (sizeImage);
 	h_ImageData = (float *)hdr.data;
 	h_ImageOut = (float *) malloc (sizeImage);
+	float elapsed_time = 0.0;
 
-	float elapsed_time = tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, block_size, sizeImage);
+	if(tmo == "log") {
+		elapsed_time = log_tonemap(h_ImageData, h_ImageOut, width, height, channels, k, q, blockSize, sizeImage);
+	} else if(tmo == "gamma") {
+		elapsed_time = gamma_tonemap(h_ImageData, h_ImageOut, width, height, channels, f_stop, gamma, blockSize,
+		                             sizeImage);
+	} else {
+		elapsed_time = adaptive_log_tonemap(h_ImageData, h_ImageOut, width, height, channels, b, ld_max, blockSize, sizeImage);
+	}
 
 	ldr.create(height, width, CV_32FC3);
 	ldr.data = (unsigned char *)h_ImageOut;
@@ -78,6 +86,15 @@ float task(std::string image_name, float f_stop, float gamma, int block_size, st
 
 	return elapsed_time;
 }
+
+void Usage()
+{
+	printf("Usage: ./tonemapping <images_src> <results_dst> <output_separator> <TMO>(log/gamma/adap_log)\n");
+	printf("If TMO = log, add: <k> <q>\n");
+	printf("If TMO = gamma, add: <gamma> <f_stop>\n");
+	printf("If TMO = adap_log, add: <b> <ld_max>\n");
+}
+
 
 int main(int argc, char** argv)
 {
@@ -91,23 +108,56 @@ int main(int argc, char** argv)
 		my_abort(EXIT_FAILURE);
 	}
 
-	if(argc !=6) {
+	/*if(argc !=6) {
 //        printf("No image Data \n");
 		printf("Usage: ./tonemapping <f_stop> <gamma> <image_src> <results_dst> <output_separator>");
 		my_abort(EXIT_FAILURE);
 //        return -1;
-	}
+	}*/
 
 	int nworkers = numtasks - 1;
 	if(taskid == 0) {
+
+		float f_stop=0.0, gamma=0.0, q=0.0, k=0.0, b=1.0, ld_max=0.0;
+
+		if(argc == 1 || argc < 5) {
+			Usage();
+			my_abort(EXIT_FAILURE);
+		}
+		std::string images_path(argv[1]);
+		std::string dst_path(argv[2]);
+		std::string separator(argv[3]);
+		std::string tmo(argv[4]);
+
+		if(tmo == "log") {
+			if(argc != 7) {
+				Usage();
+				my_abort(EXIT_FAILURE);
+			}
+			k = atof(argv[5]);
+			q = atof(argv[6]);
+		} else if(tmo == "gamma") {
+			if(argc != 7) {
+				Usage();
+				my_abort(EXIT_FAILURE);
+			}
+			gamma = atof(argv[5]);
+			f_stop = atof(argv[6]);
+		} else if(tmo == "adap_log") {
+			if(argc != 7) {
+				Usage();
+				my_abort(EXIT_FAILURE);
+			}
+			b = atof(argv[5]);
+			ld_max = atof(argv[6]);
+		} else {
+			Usage();
+			my_abort(EXIT_FAILURE);
+		}
+
 		clock_t start, end;
 		double batch_time;
-		int block_size = BLOCK_SIZE;
-		float f_stop = atof(argv[1]);
-		float gamma = atof(argv[2]);
-		std::string images_path(argv[3]);
-		std::string dst_path(argv[4]);
-		std::string separator(argv[5]);
+		int blockSize = BLOCK_SIZE;
 
 		std::vector<std::string> files;
 		read_files(files, images_path);
@@ -124,9 +174,14 @@ int main(int argc, char** argv)
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(tmo.c_str(), tmo.size()+1, MPI_CHAR, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
-				MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&k, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&q, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&b, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&ld_max, 1, MPI_FLOAT, j, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&blockSize, 1, MPI_INT, j, FROM_MASTER, MPI_COMM_WORLD));
 				files.pop_back();
 				j++;
 			}
@@ -162,9 +217,14 @@ int main(int argc, char** argv)
 					MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(tmo.c_str(), tmo.size()+1, MPI_CHAR, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
-					MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&k, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&q, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&b, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&ld_max, 1, MPI_FLOAT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
+					MPI_CHECK(MPI_Send(&blockSize, 1, MPI_INT, tmpid, FROM_MASTER, MPI_COMM_WORLD));
 					files.pop_back();
 				} else {
 					// finish
@@ -193,9 +253,14 @@ int main(int argc, char** argv)
 				MPI_CHECK(MPI_Send(images_path.c_str(), images_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(dst_path.c_str(), dst_path.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(tmp.c_str(), tmp.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(tmo.c_str(), tmo.size()+1, MPI_CHAR, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(&f_stop, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				MPI_CHECK(MPI_Send(&gamma, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
-				MPI_CHECK(MPI_Send(&block_size, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&k, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&q, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&b, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&ld_max, 1, MPI_FLOAT, i+1, FROM_MASTER, MPI_COMM_WORLD));
+				MPI_CHECK(MPI_Send(&blockSize, 1, MPI_INT, i+1, FROM_MASTER, MPI_COMM_WORLD));
 				i++;
 			}
 			int j = 1;
@@ -234,14 +299,19 @@ int main(int argc, char** argv)
 
 	if(taskid > 0) {
 		while(true) {
-			MPI_Status status_op, status_images, status_dst, status_file;
-			int length_op = 0, length_images = 0, length_dst = 0, length_file = 0;
+			MPI_Status status_op, status_images, status_dst, status_file, status_tmo;
+			int length_op = 0, length_images = 0, length_dst = 0, length_file = 0, length_tmo = 0;
 			char* op = NULL;
 			char* images_path = NULL;
 			char* dst_path = NULL;
 			char* file_name = NULL;
+			char* tmo = NULL;
 			float f_stop;
 			float gamma;
+			float k;
+			float q;
+			float b;
+			float ld_max;
 			int block_size;
 			float elapsed_time = 0.0;
 
@@ -283,20 +353,31 @@ int main(int argc, char** argv)
 			file_name = (char*)malloc(sizeof(char) * length_file);
 			MPI_CHECK(MPI_Recv(file_name, length_file, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
+			// Receive tmo
+			MPI_CHECK(MPI_Probe(0, FROM_MASTER, MPI_COMM_WORLD, &status_tmo));
+			MPI_CHECK(MPI_Get_count(&status_tmo, MPI_CHAR, &length_tmo));
+			tmo = (char*)malloc(sizeof(char) * length_tmo);
+			MPI_CHECK(MPI_Recv(file_name, length_tmo, MPI_CHAR, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+
 			MPI_CHECK(MPI_Recv(&f_stop, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 			MPI_CHECK(MPI_Recv(&gamma, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&k, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&q, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&b, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+			MPI_CHECK(MPI_Recv(&ld_max, 1, MPI_FLOAT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 			MPI_CHECK(MPI_Recv(&block_size, 1, MPI_INT, 0, FROM_MASTER, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 
 //			std::cout << "Process \"" << taskid << "\" received file \"" << std::string(file_name) << "\" and settings: " <<
 //			          std::string(images_path) << ", " << std::string(dst_path) << ", " << f_stop << ", " << gamma << ", " << block_size << std::endl;
 
-			elapsed_time = task(std::string(file_name), f_stop, gamma, block_size, std::string(images_path), std::string(dst_path));
+			elapsed_time = task(std::string(file_name), std::string(images_path), std::string(dst_path), std::string(tmo),
+			                    block_size, f_stop, gamma, q, k, b, ld_max);
 
 			MPI_CHECK(MPI_Send(&taskid, 1, MPI_INT, 0, FROM_WORKER, MPI_COMM_WORLD));
 			MPI_CHECK(MPI_Send(&elapsed_time, 1, MPI_FLOAT, 0, FROM_WORKER, MPI_COMM_WORLD));
 			MPI_CHECK(MPI_Send(file_name, std::strlen(file_name)+1, MPI_CHAR, 0, FROM_WORKER, MPI_COMM_WORLD));
 
-			free(images_path); free(dst_path); free(file_name);
+			free(images_path); free(dst_path); free(file_name); free(tmo);
 		}
 	}
 
