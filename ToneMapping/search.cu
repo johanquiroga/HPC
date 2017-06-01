@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 	int *d_mutex;
 	int width, height, channels, sizeImage, N;
 
-	Mat image, gray_image;
+	Mat image, xyz_image, xyz[3];
 
 	image = imread(image_name, -1);
 	if(argc !=2 || !image.data) {
@@ -67,16 +67,17 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	cvtColor(image, gray_image, CV_BGR2GRAY);
+	cvtColor(image, xyz_image, CV_BGR2XYZ);
+	split(xyz_image,xyz);
 
-	width = gray_image.cols;
-	height = gray_image.rows;
-	channels = gray_image.channels();
+	width = xyz[1].cols;
+	height = xyz[1].rows;
+	channels = xyz[1].channels();
 	N = width*height*channels;
 	sizeImage = sizeof(float)*width*height*channels;
 
 	//h_ImageData = (float *) malloc (sizeImage);
-	h_ImageData = (float *)gray_image.data;
+	h_ImageData = (float *)channels[1].data;
 	h_max = (float*)malloc(sizeof(float));
 
 	cudaMalloc((void **)&d_ImageData, sizeImage);
