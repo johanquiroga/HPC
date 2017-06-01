@@ -6,6 +6,7 @@
 #include <time.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "lib/helpers.h"
 
@@ -16,7 +17,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
-	Mat hdr, ldr;
+	Mat hdr, ldr, xyz_hdr;
 	int width, height, channels, sizeImage;
 
 	std::string path = images_path + "/" + image_name;
@@ -60,13 +61,13 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 	}
 
 	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
-	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 );
-	y_channel_out.data = h_ImageOut;
+	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 , h_ImageOut);
+//	y_channel_out.data = (unsigned char *)h_ImageOut;
 
 	Mat out[] = { xyz_hdr, y_channel_out};
 
-	int from_to[] = { 0,0, 3,1, 2,2 };
-	mixChannels( &out, 2, &xyz_ldr, 1, from_to, 3 );
+	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
+	mixChannels( &out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
 
 	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
 
