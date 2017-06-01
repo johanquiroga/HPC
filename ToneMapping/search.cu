@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
 	Mat y_channel( xyz_image.rows, xyz_image.cols, CV_32FC1 );
 	int from_to[] = { 1,0 };
-	mixChannels( &xyz_image, 1, y_channel, 1, from_to, 1 );
+	mixChannels( &xyz_image, 1, &y_channel, 1, from_to, 1 );
 
 	width = y_channel.cols;
 	height = y_channel.rows;
