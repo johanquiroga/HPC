@@ -68,16 +68,20 @@ int main(int argc, char** argv)
 	}
 
 	cvtColor(image, xyz_image, CV_BGR2XYZ);
-	split(xyz_image,xyz);
+//	split(xyz_image,xyz);
 
-	width = xyz[1].cols;
-	height = xyz[1].rows;
-	channels = xyz[1].channels();
+	Mat y_channel( xyz_image.rows, xyz_image.cols, CV_32FC1 );
+	int from_to[] = { 1,0 };
+	mixChannels( &xyz_image, 1, y_channel, 1, from_to, 1 );
+
+	width = y_channel.cols;
+	height = y_channel.rows;
+	channels = y_channel.channels();
 	N = width*height*channels;
 	sizeImage = sizeof(float)*width*height*channels;
 
 	//h_ImageData = (float *) malloc (sizeImage);
-	h_ImageData = (float *)channels[1].data;
+	h_ImageData = (float *)y_channel.data;
 	h_max = (float*)malloc(sizeof(float));
 
 	cudaMalloc((void **)&d_ImageData, sizeImage);
