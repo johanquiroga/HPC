@@ -62,7 +62,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 
 	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
 	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1, h_ImageOut);
-	imshow("y_channel_out", y_channel_out);
+	showImage(y_channel_out, "y_channel_out");
 //	y_channel_out.data = (unsigned char *)h_ImageOut;
 
 	Mat out[] = { xyz_hdr, y_channel_out};
@@ -74,9 +74,14 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 
 	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
 
+	printf("Image: %s\n", type2str(ldr.type()).c_str());
+
 //	ldr.create(height, width, CV_32FC3);
 //	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
+
+	printf("Image: %s\n", type2str(ldr.type()).c_str());
+
 	image_out_name = dst_path + "/" + change_image_extension(image_name);
 	imwrite(image_out_name.c_str(), ldr);
 
