@@ -36,18 +36,18 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 //        return -1;
 	}
 
-	cvtColor(hdr, xyz_hdr, CV_BGR2XYZ);
+//	cvtColor(hdr, xyz_hdr, CV_BGR2XYZ);
 
-	Mat y_channel( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 );
-	int from_to[] = { 1,0 };
-	mixChannels( &xyz_hdr, 1, &y_channel, 1, from_to, 1 );
+//	Mat y_channel( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 );
+//	int from_to[] = { 1,0 };
+//	mixChannels( &xyz_hdr, 1, &y_channel, 1, from_to, 1 );
 
-	width = y_channel.cols;
-	height = y_channel.rows;
-	channels = y_channel.channels();
+	width = hdr.cols;
+	height = hdr.rows;
+	channels = hdr.channels();
 	sizeImage = sizeof(float)*width*height*channels;
 
-	h_ImageData = (float *)y_channel.data;
+	h_ImageData = (float *)hdr.data;
 	h_ImageOut = (float *) malloc (sizeImage);
 
 	float elapsed_time = 0.0;
@@ -60,25 +60,23 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 		elapsed_time = adaptive_log_tonemap(h_ImageData, h_ImageOut, width, height, channels, b, ld_max, sizeImage);
 	}
 
-	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
+//	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
 //	Mat y_channel_out = Mat::zeros( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1);
-	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1, h_ImageOut);
+//	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1, h_ImageOut);
 //	y_channel_out.data = (unsigned char *)h_ImageOut;
 //	showImage(y_channel_out, "y_channel_out");
 //	waitKey(0);
 	
-	Mat out[] = { xyz_hdr, y_channel_out};
+//	Mat out[] = { xyz_hdr, y_channel_out};
 
-	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
-	mixChannels( out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
+//	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
+//	mixChannels( out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
 
+//	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
 
+//	printf("Image: %s\n", type2str(ldr.type()).c_str());
 
-	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
-
-	printf("Image: %s\n", type2str(ldr.type()).c_str());
-
-//	ldr.create(height, width, CV_32FC3);
+	ldr.create(height, width, CV_32FC3, h_ImageOut);
 //	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
 

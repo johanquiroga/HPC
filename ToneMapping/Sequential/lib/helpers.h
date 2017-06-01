@@ -92,6 +92,12 @@ float find_max(float* array, int N)
 	return h_max;
 }
 
+float rgb2xyY(float* h_ImageData, int width, int row, int col)
+{
+	return h_ImageData[(row * width + col) * 3 + 0] * 0.0722 + h_ImageData[(row * width + col) * 3 + 1] * 0.7152 +
+			h_ImageData[(row * width + col) * 3 + 2] * 0.2126;
+}
+
 float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int sizeImage)
 {
 	clock_t start, end;
@@ -100,8 +106,10 @@ float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height
 	start = clock();
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
+			float luminance = rgb2xyY(h_ImageData, width, i,  j);
+			float scale = gamma_correction(f_stop, gamma, luminance);
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = gamma_correction(f_stop, gamma, h_ImageData[(i * width + j) * channels + k]);
+				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//gamma_correction(f_stop, gamma, h_ImageData[(i * width + j) * channels + k]);
 			}
 		}
 		
@@ -129,8 +137,10 @@ float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, 
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
+			float luminance = rgb2xyY(h_ImageData, width, i,  j);
+			float scale = logarithmic_mapping(k, q, luminance, h_max);
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], h_max);
+				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], h_max);
 			}
 		}
 
@@ -160,8 +170,10 @@ float adaptive_log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
+			float luminance = rgb2xyY(h_ImageData, width, i,  j);
+			float scale = adaptive_logarithmic_mapping(h_max, ld_max, luminance, b);
 			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = adaptive_logarithmic_mapping(h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
+				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//adaptive_logarithmic_mapping(h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
 			}
 		}
 
