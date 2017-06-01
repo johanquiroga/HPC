@@ -61,13 +61,16 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 	}
 
 	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
-	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 , h_ImageOut);
+	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1, h_ImageOut);
+	imshow("y_channel_out", y_channel_out);
 //	y_channel_out.data = (unsigned char *)h_ImageOut;
 
 	Mat out[] = { xyz_hdr, y_channel_out};
 
 	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
 	mixChannels( &out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
+
+
 
 	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
 
