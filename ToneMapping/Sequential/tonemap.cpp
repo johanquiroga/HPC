@@ -68,7 +68,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 	Mat out[] = { xyz_hdr, y_channel_out};
 
 	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
-	mixChannels( &out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
+	mixChannels( out, 2, &xyz_ldr, 1, from_to_ldr, 3 );
 
 
 
