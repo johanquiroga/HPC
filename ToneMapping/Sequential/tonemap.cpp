@@ -35,15 +35,18 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 //        return -1;
 	}
 
-	cvtColor(hdr, hdr, CV_BGR2XYZ);
-	split(src,bgr);
+	cvtColor(hdr, xyz_hdr, CV_BGR2XYZ);
 
-	width = hdr.cols;
-	height = hdr.rows;
-	channels = hdr.channels();
+	Mat y_channel( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 );
+	int from_to[] = { 1,0 };
+	mixChannels( &xyz_hdr, 1, &y_channel, 1, from_to, 1 );
+
+	width = y_channel.cols;
+	height = y_channel.rows;
+	channels = y_channel.channels();
 	sizeImage = sizeof(float)*width*height*channels;
 
-	h_ImageData = (float *)hdr.data;
+	h_ImageData = (float *)y_channel.data;
 	h_ImageOut = (float *) malloc (sizeImage);
 
 	float elapsed_time = 0.0;
@@ -56,8 +59,19 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 		elapsed_time = adaptive_log_tonemap(h_ImageData, h_ImageOut, width, height, channels, b, ld_max, sizeImage);
 	}
 
-	ldr.create(height, width, CV_32FC3);
-	ldr.data = (unsigned char *)h_ImageOut;
+	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
+	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1 );
+	y_channel_out.data = h_ImageOut;
+
+	Mat out[] = { xyz_hdr, y_channel_out};
+
+	int from_to[] = { 0,0, 3,1, 2,2 };
+	mixChannels( &out, 2, &xyz_ldr, 1, from_to, 3 );
+
+	cvtColor(xyz_ldr, ldr, CV_XYZ2BGR);
+
+//	ldr.create(height, width, CV_32FC3);
+//	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
 	image_out_name = dst_path + "/" + change_image_extension(image_name);
 	imwrite(image_out_name.c_str(), ldr);
