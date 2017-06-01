@@ -61,10 +61,12 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 	}
 
 	Mat xyz_ldr(xyz_hdr.rows, xyz_hdr.cols, CV_32FC3);
+//	Mat y_channel_out = Mat::zeros( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1);
 	Mat y_channel_out( xyz_hdr.rows, xyz_hdr.cols, CV_32FC1, h_ImageOut);
-	showImage(y_channel_out, "y_channel_out");
 //	y_channel_out.data = (unsigned char *)h_ImageOut;
-
+//	showImage(y_channel_out, "y_channel_out");
+//	waitKey(0);
+	
 	Mat out[] = { xyz_hdr, y_channel_out};
 
 	int from_to_ldr[] = { 0,0, 3,1, 2,2 };
