@@ -1,13 +1,12 @@
 #ifndef HPC_HELPERS_H
 #define HPC_HELPERS_H
 
-//#include <iostream>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string>
 #include <dirent.h>
-//#include <time.h>
 #include <math.h>
+
+#define BLUE 0
+#define GREEN 1
+#define RED 2
 
 using namespace cv;
 
@@ -79,23 +78,23 @@ float gamma_correction(float f_stop, float gamma, float val)
 	return powf((val*powf(2.0, f_stop)), (1.0/gamma));
 }
 
+float rgb2Lum(float B, float G, float R)
+{
+	return B * 0.0722 + G * 0.7152 + R * 0.2126;
+}
+
 float find_max(float* array, int N)
 {
 	float h_max = -1.0;
 
-	for(unsigned int i=0;i<N;i++){
-		if(array[i] > h_max){
-			h_max = array[i];
+	for(unsigned int i=0;i<N;i+=3) {
+		float L = rgb2Lum(h_ImageData[i], h_ImageData[i+1], h_ImageData[i+2]);
+		if(L > h_max) {
+			h_max = L;
 		}
 	}
 
 	return h_max;
-}
-
-float rgb2xyY(float* h_ImageData, int width, int row, int col)
-{
-	return h_ImageData[(row * width + col) * 3 + 0] * 0.0722 + h_ImageData[(row * width + col) * 3 + 1] * 0.7152 +
-			h_ImageData[(row * width + col) * 3 + 2] * 0.2126;
 }
 
 float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, int channels, float f_stop, float gamma, int sizeImage)
@@ -106,11 +105,18 @@ float gamma_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height
 	start = clock();
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			float luminance = rgb2xyY(h_ImageData, width, i,  j);
-			float scale = gamma_correction(f_stop, gamma, luminance);
-			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//gamma_correction(f_stop, gamma, h_ImageData[(i * width + j) * channels + k]);
-			}
+			float B, G, R, L, nL, scale;
+			B = h_ImageData[(i * width + j) * 3 + BLUE];
+			G = h_ImageData[(i * width + j) * 3 + GREEN];
+			R = h_ImageData[(i * width + j) * 3 + RED];
+
+			L = rgb2Lum(B, G, R);
+			nL = gamma_correction(f_stop, gamma, L);
+			scale = nL/L;
+
+			h_ImageOut[(i * width + j) * 3 + BLUE] = B * scale;
+			h_ImageOut[(i * width + j) * 3 + GREEN] = G * scale;
+			h_ImageOut[(i * width + j) * 3 + RED] = R * scale;
 		}
 		
 	}
@@ -137,11 +143,18 @@ float log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int height, 
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			float luminance = rgb2xyY(h_ImageData, width, i,  j);
-			float scale = logarithmic_mapping(k, q, luminance, h_max);
-			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//logarithmic_mapping(k, q, h_ImageData[(i * width + j) * channels + k], h_max);
-			}
+			float B, G, R, L, nL, scale;
+			B = h_ImageData[(i * width + j) * 3 + BLUE];
+			G = h_ImageData[(i * width + j) * 3 + GREEN];
+			R = h_ImageData[(i * width + j) * 3 + RED];
+
+			L = rgb2Lum(B, G, R);
+			nL = logarithmic_mapping(k, q, L, h_max);
+			scale = nL/L;
+
+			h_ImageOut[(i * width + j) * 3 + BLUE] = B * scale;
+			h_ImageOut[(i * width + j) * 3 + GREEN] = G * scale;
+			h_ImageOut[(i * width + j) * 3 + RED] = R * scale;
 		}
 
 	}
@@ -170,11 +183,18 @@ float adaptive_log_tonemap(float* h_ImageData, float* h_ImageOut, int width, int
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			float luminance = rgb2xyY(h_ImageData, width, i,  j);
-			float scale = adaptive_logarithmic_mapping(h_max, ld_max, luminance, b);
-			for (int k = 0; k < channels; k++) {
-				h_ImageOut[(i * width + j) * channels + k] = h_ImageData[(i * width + j) * channels + k] * scale;//adaptive_logarithmic_mapping(h_max, ld_max, h_ImageData[(i * width + j) * channels + k], b);
-			}
+			float B, G, R, L, nL, scale;
+			B = h_ImageData[(i * width + j) * 3 + BLUE];
+			G = h_ImageData[(i * width + j) * 3 + GREEN];
+			R = h_ImageData[(i * width + j) * 3 + RED];
+
+			L = rgb2Lum(B, G, R);
+			nL = adaptive_logarithmic_mapping(h_max, ld_max, L, b);
+			scale = nL/L;
+
+			h_ImageOut[(i * width + j) * 3 + BLUE] = B * scale;
+			h_ImageOut[(i * width + j) * 3 + GREEN] = G * scale;
+			h_ImageOut[(i * width + j) * 3 + RED] = R * scale;
 		}
 
 	}
