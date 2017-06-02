@@ -17,7 +17,7 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 {
 	float *h_ImageData, *h_ImageOut;
 	std::string image_out_name;
-	Mat hdr, ldr, xyz_hdr;
+	Mat hdr;
 	int width, height, channels, sizeImage;
 
 	std::string path = images_path + "/" + image_name;
@@ -76,8 +76,9 @@ float task(std::string image_name, std::string images_path, std::string dst_path
 
 //	printf("Image: %s\n", type2str(ldr.type()).c_str());
 
-	ldr.create(height, width, CV_32FC3);
-	ldr.data = (unsigned char *)h_ImageOut;
+	Mat ldr = Mat(height, width, CV_32FC3, h_ImageOut);
+//	ldr.create(height, width, CV_32FC3);
+//	ldr.data = (unsigned char *)h_ImageOut;
 	ldr.convertTo(ldr, CV_8UC3, 255);
 
 	printf("Image: %s\n", type2str(ldr.type()).c_str());
