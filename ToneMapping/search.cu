@@ -9,6 +9,17 @@
 #define RED 2
 
 using namespace cv;
+
+__device__ float rgb2Lum(float B, float G, float R)
+{
+	return B * 0.0722 + G * 0.7152 + R * 0.2126;
+}
+
+float rgb2Lum_host(float B, float G, float R)
+{
+	return B * 0.0722 + G * 0.7152 + R * 0.2126;
+}
+
 __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n)
 {
 	unsigned int index = threadIdx.x + blockIdx.x*blockDim.x;
@@ -104,15 +115,16 @@ int main(int argc, char** argv)
 	int blockSize = 256;
 	dim3 dimBlock(blockSize, 1, 1);
 	dim3 dimGrid(ceil(width/float(blockSize)), 1, 1);
-	find_maximum_kernel<<< dimGrid, dimBlock, sizeof(float)*blockSize >>>(d_ImageData, d_max, d_mutex, N, blockSize);
+	find_maximum_kernel<<< dimGrid, dimBlock, sizeof(float)*blockSize >>>(d_ImageData, d_max, d_mutex, N);
 
 	cudaMemcpy(h_max, d_max, sizeof(float), cudaMemcpyDeviceToHost);
 	printf("Maximum number found on gpu was: %f\n", *h_max);
 
 	*h_max = -1.0;
-	for(unsigned int i=0;i<N;i++){
-		if(h_ImageData[i] > *h_max){
-			*h_max = h_ImageData[i];
+	for(unsigned int i=0;i<N;i+=3) {
+		float L = rgb2Lum_host(h_ImageData[i], h_ImageData[i+1], h_ImageData[i+2]);
+		if(L > *h_max) {
+			*h_max = L;
 		}
 	}
 
