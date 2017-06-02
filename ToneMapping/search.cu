@@ -5,20 +5,25 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 using namespace cv;
-
-__global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n, int blockSize)
+__global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n)
 {
 	unsigned int index = threadIdx.x + blockIdx.x*blockDim.x;
 	unsigned int stride = gridDim.x*blockDim.x;
 	unsigned int offset = 0;
 //	const int size = blockSize;
 
-	extern	__shared__ float cache[];
-
+	extern __shared__ float cache[];
 
 	float temp = -1.0;
-	while(index + offset < n){
-		temp = fmaxf(temp, array[index + offset]);
+	while(((index + offset)*3 + 2) < n) {
+		float B, G, R, L;
+
+		B = array[(index + offset)*3 + BLUE];
+		G = array[(index + offset)*3 + GREEN];
+		R = array[(index + offset)*3 + RED];
+		L = rgb2Lum(B, G, R);
+
+		temp = fmaxf(temp, L);
 
 		offset += stride;
 	}
