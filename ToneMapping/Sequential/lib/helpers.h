@@ -88,7 +88,7 @@ float find_max(float* array, int N)
 	float h_max = -1.0;
 
 	for(unsigned int i=0;i<N;i+=3) {
-		float L = rgb2Lum(h_ImageData[i], h_ImageData[i+1], h_ImageData[i+2]);
+		float L = rgb2Lum(array[i], array[i+1], array[i+2]);
 		if(L > h_max) {
 			h_max = L;
 		}
