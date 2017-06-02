@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 
 	int blockSize = 256;
 	dim3 dimBlock(blockSize, 1, 1);
-	dim3 dimGrid(ceil(width/float(blockSize)), 1, 1);
+	dim3 dimGrid(ceil((width/3)/float(blockSize)), 1, 1);
 	find_maximum_kernel<<< dimGrid, dimBlock, sizeof(float)*blockSize >>>(d_ImageData, d_max, d_mutex, N);
 
 	cudaMemcpy(h_max, d_max, sizeof(float), cudaMemcpyDeviceToHost);
