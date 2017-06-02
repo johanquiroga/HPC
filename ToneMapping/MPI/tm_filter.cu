@@ -171,7 +171,7 @@ float log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, 
 
 	int search_blockSize = 256;
 	dim3 dimBlock_search(search_blockSize, 1, 1);
-	dim3 dimGrid_search(ceil((width/3)/(float(search_blockSize))), 1, 1);
+	dim3 dimGrid_search(ceil((width/3)/float(search_blockSize)), 1, 1);
 	find_maximum_kernel<<< dimGrid_search, dimBlock_search, sizeof(float)*search_blockSize >>>(d_ImageData, d_max, d_mutex,
 			sizeImage/sizeof(float));
 	cudaDeviceSynchronize();
@@ -250,7 +250,7 @@ float adaptive_log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int
 
 	int search_blockSize = 256;
 	dim3 dimBlock_search(search_blockSize, 1, 1);
-	dim3 dimGrid_search(ceil(width/float(search_blockSize)), 1, 1);
+	dim3 dimGrid_search(ceil((width/3)/float(search_blockSize)), 1, 1);
 	find_maximum_kernel<<< dimGrid_search, dimBlock_search, sizeof(float)*search_blockSize >>>(d_ImageData, d_max, d_mutex,
 			sizeImage/sizeof(float));
 	cudaDeviceSynchronize();

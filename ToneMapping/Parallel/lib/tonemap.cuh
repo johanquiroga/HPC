@@ -14,6 +14,11 @@
         std::cerr << "CUDA error calling \""#call"\", code is " << err << std::endl; \
         exit(err); }
 
+__device__ float rgb2Lum(float B, float G, float R)
+{
+	return B * 0.0722 + G * 0.7152 + R * 0.2126;
+}
+
 __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n)
 {
 	unsigned int index = threadIdx.x + blockIdx.x*blockDim.x;
@@ -21,12 +26,18 @@ __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsign
 	unsigned int offset = 0;
 //	const int size = blockSize;
 
-	extern	__shared__ float cache[];
-
+	extern __shared__ float cache[];
 
 	float temp = -1.0;
-	while(index + offset < n){
-		temp = fmaxf(temp, array[index + offset]);
+	while(((index + offset)*3 + 2) < n) {
+		float B, G, R, L;
+
+		B = array[(index + offset)*3 + BLUE];
+		G = array[(index + offset)*3 + GREEN];
+		R = array[(index + offset)*3 + RED];
+		L = rgb2Lum(B, G, R);
+
+		temp = fmaxf(temp, L);
 
 		offset += stride;
 	}
@@ -52,11 +63,6 @@ __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsign
 		*max = fmaxf(*max, cache[0]);
 		atomicExch(mutex, 0);  //unlock
 	}
-}
-
-__device__ float rgb2Lum(float B, float G, float R)
-{
-	return B * 0.0722 + G * 0.7152 + R * 0.2126;
 }
 
 __device__ float logarithmic_mapping(float k, float q, float val_pixel, float maxLum){
@@ -160,7 +166,7 @@ float log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int height, 
 
 	int search_blockSize = 256;
 	dim3 dimBlock_search(search_blockSize, 1, 1);
-	dim3 dimGrid_search(ceil(width/float(search_blockSize)), 1, 1);
+	dim3 dimGrid_search(ceil((width/3)/float(search_blockSize)), 1, 1);
 	find_maximum_kernel<<< dimGrid_search, dimBlock_search, sizeof(float)*search_blockSize >>>(d_ImageData, d_max, d_mutex,
 			sizeImage/sizeof(float));
 	cudaDeviceSynchronize();
@@ -239,7 +245,7 @@ float adaptive_log_tonemap(float *h_ImageData, float *h_ImageOut, int width, int
 
 	int search_blockSize = 256;
 	dim3 dimBlock_search(search_blockSize, 1, 1);
-	dim3 dimGrid_search(ceil(width/float(search_blockSize)), 1, 1);
+	dim3 dimGrid_search(ceil((width/3)/float(search_blockSize)), 1, 1);
 	find_maximum_kernel<<< dimGrid_search, dimBlock_search, sizeof(float)*search_blockSize >>>(d_ImageData, d_max, d_mutex,
 			sizeImage/sizeof(float));
 	cudaDeviceSynchronize();
