@@ -4,6 +4,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 
+#define BLUE 0
+#define GREEN 1
+#define RED 2
+
 using namespace cv;
 __global__ void find_maximum_kernel(float *array, float *max, int *mutex, unsigned int n)
 {
