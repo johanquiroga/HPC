@@ -28,7 +28,7 @@ do
 		mpirun build/tonemapping ../images results/results_$tmo \| $tmo 1 1 #log
 	elif [ "${tmo}" == "adap_log" ]; then
 #		echo "${tmo}"
-		mpirun build/tonemapping ../images results/results_$tmo \| $tmo 1 150 #adap_log
+		mpirun build/tonemapping ../images results/results_$tmo \| $tmo 1 100 #adap_log
 	fi
 	echo
 done
