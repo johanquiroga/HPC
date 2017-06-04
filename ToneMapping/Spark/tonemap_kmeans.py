@@ -1,10 +1,8 @@
+import sys
 import cv2
 import numpy as np
 from numpy import array
 from pyspark.mllib.clustering import KMeans, KMeansModel
-from pyspark import SparkContext
-
-sc = SparkContext(appName="ToneMapping")
 
 def rgb2Lum(pixel):
 	return pixel[0] * 0.0722 + pixel[1] * 0.7152 + pixel[2] * 0.2126
@@ -29,30 +27,40 @@ def weighted_mean(hist, point): #point = (cluster_idx, [points])
 	mean = sum([(search_hist(hist, pixel) * pixel) for pixel in point[1]]) / sum([search_hist(hist, pixel) for pixel in point[1]])
 	return mean
 
+if __name__ == '__main__':
+	if len(sys.argv) != 2:
+		print("Usage: tonemap_kmeans <file>")
+	        exit(-1)
 
-img = cv2.imread('../images/test6.exr', -1)
-bgr = img.reshape(img.shape[0] * img.shape[1], 3)
-bgr = sc.parallelize(bgr.tolist())
+	from pyspark import SparkContext
 
-L = np.array(bgr.map(lambda pixel: [rgb2Lum(pixel)]).collect(), dtype=np.float32)
+	file_name = sys.argv[1]
 
-rdd = sc.parallelize(L.tolist()).cache()
-hist = rdd.map(lambda x: (x[0], 1)).reduceByKey(lambda x,y: x+y).collect()
+	sc = SparkContext(appName="ToneMapping_Kmeans")
+	
+	img = cv2.imread(file_name, -1)
+	bgr = img.reshape(img.shape[0] * img.shape[1], 3)
+	bgr = sc.parallelize(bgr.tolist()).cache()
 
-clusters = KMeans.train(rdd, 256, initializationMode="random", maxIterations=1000)
+	L = np.array(bgr.map(lambda pixel: [rgb2Lum(pixel)]).collect(), dtype=np.float32)
 
-prediction = rdd.map(lambda x: (clusters.predict(x), x)).reduceByKey(lambda x, y: x+y)
-weighted_means = prediction.map(lambda x: (x[0], weighted_mean(hist, x)))
-means = weighted_means.collect()
+	rdd = sc.parallelize(L.tolist()).cache()
+	hist = rdd.map(lambda x: (x[0], 1)).reduceByKey(lambda x,y: x+y).collect()
 
-nL = rdd.map(lambda L: [search_mean(means, clusters.predict(L))])
-nnL = np.array(nL.collect(), dtype=np.float32)
-scale = nnL / L
+	clusters = KMeans.train(rdd, 256, initializationMode="random", maxIterations=1000)
 
-ldr = np.array(bgr.collect(), dtype=np.float32)
-ldr *= scale
+	prediction = rdd.map(lambda x: (clusters.predict(x), x)).reduceByKey(lambda x, y: x+y)
+	weighted_means = prediction.map(lambda x: (x[0], weighted_mean(hist, x)))
+	means = weighted_means.collect()
 
-result = ldr.reshape(img.shape[0], img.shape[1], 3)
-cv2.imwrite('result_spark_kmeans.png', result*255)
+	nL = rdd.map(lambda L: [search_mean(means, clusters.predict(L))])
+	nnL = np.array(nL.collect(), dtype=np.float32)
+	scale = nnL / L
 
-sc.stop()
+	ldr = np.array(bgr.collect(), dtype=np.float32)
+	ldr *= scale
+
+	result = ldr.reshape(img.shape[0], img.shape[1], 3)
+	cv2.imwrite('result_spark_kmeans.png', result*255)
+
+	sc.stop()
