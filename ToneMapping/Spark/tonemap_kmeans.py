@@ -36,7 +36,7 @@ bgr = sc.parallelize(bgr.tolist())
 
 L = np.array(bgr.map(lambda pixel: [rgb2Lum(pixel)]).collect(), dtype=np.float32)
 
-rdd = sc.parallelize(L.tolist())
+rdd = sc.parallelize(L.tolist()).cache()
 hist = rdd.map(lambda x: (x[0], 1)).reduceByKey(lambda x,y: x+y).collect()
 
 clusters = KMeans.train(rdd, 256, initializationMode="random", maxIterations=1000)

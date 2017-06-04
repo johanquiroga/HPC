@@ -28,10 +28,9 @@ def weighted_mean(hist, point): #point = (cluster_idx, [points])
 	return mean
 
 if __name__ == '__main__':
-
 	if len(sys.argv) != 2:
-        print("Usage: tonemap_kmeans <file> " file=sys.stderr)
-        exit(-1)
+		print("Usage: tonemap_kmeans <file>")
+	        exit(-1)
 
 	from pyspark import SparkContext
 
@@ -41,11 +40,11 @@ if __name__ == '__main__':
 	
 	img = cv2.imread(file_name, -1)
 	bgr = img.reshape(img.shape[0] * img.shape[1], 3)
-	bgr = sc.parallelize(bgr.tolist())
+	bgr = sc.parallelize(bgr.tolist()).cache()
 
 	L = np.array(bgr.map(lambda pixel: [rgb2Lum(pixel)]).collect(), dtype=np.float32)
 
-	rdd = sc.parallelize(L.tolist())
+	rdd = sc.parallelize(L.tolist()).cache()
 	hist = rdd.map(lambda x: (x[0], 1)).reduceByKey(lambda x,y: x+y).collect()
 
 	clusters = KMeans.train(rdd, 256, initializationMode="random", maxIterations=1000)
