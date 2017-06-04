@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 from numpy import array
@@ -26,13 +27,19 @@ def weighted_mean(hist, point): #point = (cluster_idx, [points])
 	mean = sum([(search_hist(hist, pixel) * pixel) for pixel in point[1]]) / sum([search_hist(hist, pixel) for pixel in point[1]])
 	return mean
 
-
 if __name__ == '__main__':
+
+	if len(sys.argv) != 2:
+        print("Usage: tonemap_kmeans <file> " file=sys.stderr)
+        exit(-1)
+
 	from pyspark import SparkContext
+
+	file_name = sys.argv[1]
 
 	sc = SparkContext(appName="ToneMapping_Kmeans")
 	
-	img = cv2.imread('../images/test6.exr', -1)
+	img = cv2.imread(file_name, -1)
 	bgr = img.reshape(img.shape[0] * img.shape[1], 3)
 	bgr = sc.parallelize(bgr.tolist())
 
