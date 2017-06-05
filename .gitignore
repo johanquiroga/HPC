@@ -19,7 +19,8 @@ cuda_matrix_mult
 /build
 *.nvvp
 images
-results
+#results/
+*.png
 test
 tonemap
 */Sequential/testsHDR
