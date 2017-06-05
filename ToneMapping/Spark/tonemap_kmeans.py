@@ -4,6 +4,9 @@ import numpy as np
 from numpy import array
 from pyspark.mllib.clustering import KMeans, KMeansModel
 
+def change_image_extension(img):
+	return img.replace('.exr', '.png')
+
 def rgb2Lum(pixel):
 	return pixel[0] * 0.0722 + pixel[1] * 0.7152 + pixel[2] * 0.2126
 
@@ -61,6 +64,6 @@ if __name__ == '__main__':
 	ldr *= scale
 
 	result = ldr.reshape(img.shape[0], img.shape[1], 3)
-	cv2.imwrite('result_spark_kmeans.png', result*255)
+	cv2.imwrite(change_image_extension(file_name), result*255)
 
 	sc.stop()
