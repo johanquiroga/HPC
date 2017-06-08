@@ -17,4 +17,5 @@
 ## Running the Programs
 1. Go to the version Directory that you wish to run, e.g. Parallel.
 1. Run the slurm command `sbatch tonemap.sh`
+	* For the MPI version, due to a problem with SLURM, run the script "*tonemap_V2.sh*". `chmod +x tonemap_V2.sh` to give execution permissions and then `./tonemap_V2.sh > res_tonemapping_mpi.md`
 1. Wait until the program finish, the images will be saved on the previously created "_results_" directory. And a "*res_tonemapping_\<version\>.md*", e.g. res_tonemapping_parallel.md
